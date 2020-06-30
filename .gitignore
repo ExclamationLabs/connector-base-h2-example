@@ -1,0 +1,7 @@
+/.idea
+/test-config.json
+/connector-base-h2-example.iml
+/target
+/out
+.DS_Store
+/custom
