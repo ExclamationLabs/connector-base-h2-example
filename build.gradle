@@ -5,6 +5,10 @@ plugins {
 repositories {
     jcenter()
 
+    flatDir {
+        dirs 'externalLib'
+    }
+
     maven {
         url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
     }
@@ -32,7 +36,14 @@ dependencies {
     // H2 database support - for this example project
     implementation "com.h2database:h2:1.4.200"
 
-    implementation 'com.exclamationlabs.connid:connector-base:0.1-+'
+    //implementation 'com.exclamationlabs.connid:connector-base:0.1-+'
+
+    // Experimental dependencies
+    // TODO: remove soon
+    implementation name: 'connector-base-0.1-SNAPSHOT'
+    implementation 'net.tirasa.connid:connector-test-common:1.5.0.0'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    // TODO: remove soon
 
     testImplementation 'com.exclamationlabs.connid:connector-base-test-support:0.1-+'
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'

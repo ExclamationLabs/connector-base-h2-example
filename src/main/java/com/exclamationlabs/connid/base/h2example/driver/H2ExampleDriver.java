@@ -380,6 +380,20 @@ public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
         person.setTimezone("Central");
         person.setDescription("X-Man");
         createUser(person);
+
+        for (int xx=1; xx <= 80; xx++) {
+            createMultipleMan(xx);
+        }
+    }
+
+    private void createMultipleMan(int index) {
+        H2ExampleUser person = new H2ExampleUser();
+        person.setFirstName("James");
+        person.setLastName("Madrox-" + index);
+        person.setEmail("madrox-" + index + "@newmutants.com");
+        person.setTimezone("Central");
+        person.setDescription("New Mutant");
+        createUser(person);
     }
 
     private void createInitialGroups() {
