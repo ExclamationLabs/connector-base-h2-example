@@ -55,7 +55,7 @@
     </activation>
     <inducement id="1">
         <construction>
-            <resourceRef oid="0bab0e8a-4f3f-4bdb-a554-ddca5416872e" relation="org:default" type="c:ResourceType">
+            <resourceRef oid="d017b44d-caf9-4931-a50b-567345bb426e" relation="org:default" type="c:ResourceType">
                 <!-- H2 Testing -->
             </resourceRef>
             <kind>entitlement</kind>
@@ -65,7 +65,7 @@
     </inducement>
     <inducement id="2">
         <construction>
-            <resourceRef oid="0bab0e8a-4f3f-4bdb-a554-ddca5416872e" relation="org:default" type="c:ResourceType">
+            <resourceRef oid="d017b44d-caf9-4931-a50b-567345bb426e" relation="org:default" type="c:ResourceType">
                 <!-- H2 Testing -->
             </resourceRef>
             <kind>account</kind>

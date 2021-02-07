@@ -13,12 +13,12 @@
 
 package com.exclamationlabs.connid.base.h2example.model;
 
-import com.exclamationlabs.connid.base.connector.model.UserIdentityModel;
+import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute;
 
 import java.util.List;
 
-public class H2ExampleUser implements UserIdentityModel {
+public class H2ExampleUser implements IdentityModel {
 
     private String id;
 
@@ -100,13 +100,4 @@ public class H2ExampleUser implements UserIdentityModel {
         this.description = description;
     }
 
-    @Override
-    public String getAssignedGroupsAttributeName() {
-        return H2ExampleUserAttribute.GROUP_IDS.name();
-    }
-
-    @Override
-    public List<String> getAssignedGroupIds() {
-        return getGroupIds();
-    }
 }

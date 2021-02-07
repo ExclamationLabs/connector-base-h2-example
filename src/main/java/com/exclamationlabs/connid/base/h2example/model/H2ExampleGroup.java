@@ -13,9 +13,9 @@
 
 package com.exclamationlabs.connid.base.h2example.model;
 
-import com.exclamationlabs.connid.base.connector.model.GroupIdentityModel;
+import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 
-public class H2ExampleGroup implements GroupIdentityModel {
+public class H2ExampleGroup implements IdentityModel {
 
     private String id;
     private String name;

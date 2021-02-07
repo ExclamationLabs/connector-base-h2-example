@@ -14,22 +14,44 @@
 package com.exclamationlabs.connid.base.h2example.adapter;
 
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
-import com.exclamationlabs.connid.base.connector.adapter.BaseGroupsAdapter;
+import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
+import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.ObjectClass;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.STRING;
 import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleGroupAttribute.*;
+import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExampleGroupsAdapter extends BaseGroupsAdapter<H2ExampleUser, H2ExampleGroup> {
-
+public class H2ExampleGroupsAdapter extends BaseAdapter<H2ExampleGroup> {
 
     @Override
-    protected H2ExampleGroup constructGroup(Set<Attribute> attributes, boolean creation) {
+    public ObjectClass getType() {
+        return ObjectClass.GROUP;
+    }
+
+    @Override
+    public Class<H2ExampleGroup> getIdentityModelClass() {
+        return H2ExampleGroup.class;
+    }
+
+    @Override
+    public List<ConnectorAttribute> getConnectorAttributes() {
+        List<ConnectorAttribute> result = new ArrayList<>();
+        result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(GROUP_DESCRIPTION.name(), STRING));
+        return result;
+    }
+
+    @Override
+    protected H2ExampleGroup constructModel(Set<Attribute> attributes, boolean creation) {
         H2ExampleGroup group = new H2ExampleGroup();
         group.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
         group.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_NAME));
@@ -38,11 +60,13 @@ public class H2ExampleGroupsAdapter extends BaseGroupsAdapter<H2ExampleUser, H2E
     }
 
     @Override
-    protected ConnectorObject constructConnectorObject(H2ExampleGroup group) {
-        return getConnectorObjectBuilder(group)
-                .addAttribute(AttributeBuilder.build(GROUP_ID.name(), group.getId()))
-                .addAttribute(AttributeBuilder.build(GROUP_NAME.name(), group.getName()))
-                .addAttribute(AttributeBuilder.build(GROUP_DESCRIPTION.name(), group.getDescription()))
-                .build();
+    protected List<Attribute> constructAttributes(H2ExampleGroup group) {
+        List<Attribute> attributes = new ArrayList<>();
+
+        attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
+        attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));
+        attributes.add(AttributeBuilder.build(GROUP_DESCRIPTION.name(), group.getDescription()));
+
+        return attributes;
     }
 }

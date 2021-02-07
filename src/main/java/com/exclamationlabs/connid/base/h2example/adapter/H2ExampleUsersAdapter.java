@@ -14,20 +14,51 @@
 package com.exclamationlabs.connid.base.h2example.adapter;
 
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
-import com.exclamationlabs.connid.base.connector.adapter.BaseUsersAdapter;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
+import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
+import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.ObjectClass;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.ASSIGNMENT_IDENTIFIER;
+import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.STRING;
 import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute.*;
+import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.MULTIVALUED;
+import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExampleUsersAdapter extends BaseUsersAdapter<H2ExampleUser, H2ExampleGroup> {
+public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
+
     @Override
-    protected H2ExampleUser constructUser(Set<Attribute> attributes, boolean creation) {
+    public ObjectClass getType() {
+        return ObjectClass.ACCOUNT;
+    }
+
+    @Override
+    public Class<H2ExampleUser> getIdentityModelClass() {
+        return H2ExampleUser.class;
+    }
+
+    @Override
+    public List<ConnectorAttribute> getConnectorAttributes() {
+        List<ConnectorAttribute> result = new ArrayList<>();
+        result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(LAST_NAME.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(EMAIL.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(TIME_ZONE.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(DESCRIPTION.name(), STRING));
+        result.add(new ConnectorAttribute(GROUP_IDS.name(), ASSIGNMENT_IDENTIFIER, MULTIVALUED));
+        return result;
+    }
+
+    @Override
+    protected H2ExampleUser constructModel(Set<Attribute> attributes, boolean creation) {
         H2ExampleUser user = new H2ExampleUser();
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
 
@@ -40,15 +71,17 @@ public class H2ExampleUsersAdapter extends BaseUsersAdapter<H2ExampleUser, H2Exa
     }
 
     @Override
-    protected ConnectorObject constructConnectorObject(H2ExampleUser user) {
-        return getConnectorObjectBuilder(user)
-                .addAttribute(AttributeBuilder.build(USER_ID.name(), user.getId()))
-                .addAttribute(AttributeBuilder.build(EMAIL.name(), user.getEmail()))
-                .addAttribute(AttributeBuilder.build(FIRST_NAME.name(), user.getFirstName()))
-                .addAttribute(AttributeBuilder.build(LAST_NAME.name(), user.getLastName()))
-                .addAttribute(AttributeBuilder.build(DESCRIPTION.name(), user.getDescription()))
-                .addAttribute(AttributeBuilder.build(TIME_ZONE.name(), user.getTimezone()))
-                .addAttribute(AttributeBuilder.build(GROUP_IDS.name(), user.getGroupIds()))
-                .build();
+    protected List<Attribute> constructAttributes(H2ExampleUser user) {
+        List<Attribute> attributes = new ArrayList<>();
+
+        attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
+        attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmail()));
+        attributes.add(AttributeBuilder.build(FIRST_NAME.name(), user.getFirstName()));
+        attributes.add(AttributeBuilder.build(LAST_NAME.name(), user.getLastName()));
+        attributes.add(AttributeBuilder.build(DESCRIPTION.name(), user.getDescription()));
+        attributes.add(AttributeBuilder.build(TIME_ZONE.name(), user.getTimezone()));
+        attributes.add(AttributeBuilder.build(GROUP_IDS.name(), user.getGroupIds()));
+
+        return attributes;
     }
 }
