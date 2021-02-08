@@ -15,25 +15,11 @@ package com.exclamationlabs.connid.base.h2example.model;
 
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 
-import java.util.List;
-
-public class H2ExampleUser implements IdentityModel {
+public class H2ExamplePower implements IdentityModel {
 
     private String id;
-
-    private String firstName;
-
-    private String lastName;
-
-    private String email;
-
-    private String timezone;
-
+    private String name;
     private String description;
-
-    private List<String> groupIds;
-
-    private List<String> powerIds;
 
     @Override
     public String getIdentityIdValue() {
@@ -42,7 +28,7 @@ public class H2ExampleUser implements IdentityModel {
 
     @Override
     public String getIdentityNameValue() {
-        return getEmail();
+        return getName();
     }
 
     public String getId() {
@@ -53,52 +39,12 @@ public class H2ExampleUser implements IdentityModel {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
-
-    public List<String> getGroupIds() {
-        return groupIds;
-    }
-
-    public void setGroupIds(List<String> groupIds) {
-        this.groupIds = groupIds;
-    }
-
-    public List<String> getPowerIds() {
-        return powerIds;
-    }
-
-    public void setPowerIds(List<String> powerIds) {
-        this.powerIds = powerIds;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -108,5 +54,4 @@ public class H2ExampleUser implements IdentityModel {
     public void setDescription(String description) {
         this.description = description;
     }
-
 }

@@ -13,7 +13,6 @@
 
 package com.exclamationlabs.connid.base.h2example.driver;
 
-import com.exclamationlabs.connid.base.connector.driver.Driver;
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.common.logging.Log;
@@ -33,9 +32,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     private static final Log LOG = Log.getLog(H2ExampleUserInvocator.class);
 
     @Override
-    public String create(H2ExampleDriver driver, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
-        H2ExampleDriver h2Driver = (H2ExampleDriver) driver;
-
+    public String create(H2ExampleDriver h2Driver, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
         int newId = new Random().nextInt();
         try {
             String sql = "INSERT INTO DEMO_USERS (id, first_name, last_name, email, " +
@@ -54,12 +51,16 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             LOG.error("Error running statement", sqlE);
             throw new ConnectorException(sqlE);
         }
-        return "" + newId;
+
+        String newIdString = "" + newId;
+        updateGroups(h2Driver, h2ExampleUser.getGroupIds(), newIdString, false);
+        updatePowers(h2Driver, h2ExampleUser.getPowerIds(), newIdString, false);
+
+        return newIdString;
     }
 
     @Override
-    public void update(H2ExampleDriver driver, String userId, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
-        H2ExampleDriver h2Driver = (H2ExampleDriver) driver;
+    public void update(H2ExampleDriver h2Driver, String userId, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
         try {
             String sql = "UPDATE DEMO_USERS SET user_description = ? WHERE id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -71,11 +72,13 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             LOG.error("Error running statement", sqlE);
             throw new ConnectorException(sqlE);
         }
+
+        updateGroups(h2Driver, h2ExampleUser.getGroupIds(), userId, true);
+        updatePowers(h2Driver, h2ExampleUser.getPowerIds(), userId, true);
     }
 
     @Override
-    public void delete(H2ExampleDriver driver, String userId) throws ConnectorException {
-        H2ExampleDriver h2Driver = (H2ExampleDriver) driver;
+    public void delete(H2ExampleDriver h2Driver, String userId) throws ConnectorException {
         try {
             String sql = "DELETE FROM DEMO_USERS WHERE id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -89,8 +92,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public List<H2ExampleUser> getAll(H2ExampleDriver driver) throws ConnectorException {
-        H2ExampleDriver h2Driver = (H2ExampleDriver) driver;
+    public List<H2ExampleUser> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
         List<H2ExampleUser> users = new ArrayList<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
@@ -110,9 +112,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public H2ExampleUser getOne(H2ExampleDriver driver, String userId) throws ConnectorException {
-        H2ExampleDriver h2Driver = (H2ExampleDriver) driver;
-        H2ExampleUser user = null;
+    public H2ExampleUser getOne(H2ExampleDriver h2Driver, String userId) throws ConnectorException {
+        H2ExampleUser user;
         try {
             String sql = "SELECT * FROM DEMO_USERS WHERE id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -121,46 +122,40 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             ResultSet rs = stmt.executeQuery();
             if(rs.next()) {
                 user = loadUserFromResultSet(rs);
+            } else {
+                return null;
             }
             rs.close();
             stmt.close();
+
         } catch (SQLException sqlE) {
             LOG.error("Error running statement", sqlE);
             throw new ConnectorException(sqlE);
         }
 
         // Load groups for user
-        try {
-            List<String> groupIds = new ArrayList<>();
-            String sql = "SELECT group_id FROM DEMO_USERS_XREF WHERE user_id = ?";
-            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(userId));
+        List<String> groupIds = loadGroups(h2Driver, userId);
+        if (!groupIds.isEmpty()) {
+            user.setGroupIds(groupIds);
+        }
 
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                groupIds.add(rs.getString("group_id"));
-            }
-            if (!groupIds.isEmpty()) {
-                user.setGroupIds(groupIds);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
+        // Load powers for user
+        List<String> powerIds = loadPowers(h2Driver, userId);
+        if (!groupIds.isEmpty()) {
+            user.setPowerIds(powerIds);
         }
 
         return user;
     }
 
-    void createInitialUsers(H2ExampleDriver driver) {
+    void createInitialUsers(H2ExampleDriver h2Driver) {
         H2ExampleUser person = new H2ExampleUser();
         person.setFirstName("Peter");
         person.setLastName("Rasputin");
         person.setEmail("peter@xmen.com");
         person.setTimezone("Central");
         person.setDescription("X-Man");
-        create(driver, person, null);
+        create(h2Driver, person, null);
 
         person = new H2ExampleUser();
         person.setFirstName("Scott");
@@ -168,7 +163,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         person.setEmail("scott@xmen.com");
         person.setTimezone("Central");
         person.setDescription("X-Man");
-        create(driver, person, null);
+        create(h2Driver, person, null);
     }
 
     private H2ExampleUser loadUserFromResultSet(ResultSet rs) throws SQLException {
@@ -180,6 +175,148 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         user.setTimezone(rs.getString("timezone"));
         user.setEmail(rs.getString("email"));
         return user;
+    }
+
+
+    private List<String> loadGroups(H2ExampleDriver h2Driver, String userId) {
+        List<String> groupIds = new ArrayList<>();
+        try {
+            String sql = "SELECT group_id FROM DEMO_USERS_XREF WHERE user_id = ?";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(userId));
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                groupIds.add(rs.getString("group_id"));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
+
+        return groupIds;
+    }
+
+    private List<String> loadPowers(H2ExampleDriver h2Driver, String userId) {
+        List<String> powerIds = new ArrayList<>();
+        try {
+            String sql = "SELECT power_id FROM DEMO_USERS_POWERS_XREF WHERE user_id = ?";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(userId));
+
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                powerIds.add(rs.getString("power_id"));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
+
+        return powerIds;
+    }
+
+
+    private void updateGroups(H2ExampleDriver h2Driver, List<String> newGroupIds, String userId, boolean isUpdate) {
+        List<String> currentGroups = new ArrayList<>();
+        if (isUpdate) {
+            currentGroups = loadGroups(h2Driver, userId);
+
+            for (String groupId : currentGroups) {
+                if (!newGroupIds.contains(groupId)) {
+                    deleteUserGroupAssociation(h2Driver, userId, groupId);
+                }
+            }
+        }
+
+        if (newGroupIds != null) {
+            for (String groupId : newGroupIds) {
+                if (!currentGroups.contains(groupId)) {
+                    addUserGroupAssociation(h2Driver, userId, groupId);
+                }
+            }
+        }
+    }
+
+    private void updatePowers(H2ExampleDriver h2Driver, List<String> newPowerIds, String userId, boolean isUpdate) {
+        List<String> currentPowers = new ArrayList<>();
+        if (isUpdate) {
+            currentPowers = loadPowers(h2Driver, userId);
+
+            for (String groupId : currentPowers) {
+                if (!newPowerIds.contains(groupId)) {
+                    deleteUserPowerAssociation(h2Driver, userId, groupId);
+                }
+            }
+        }
+
+        if (newPowerIds != null) {
+            for (String groupId : newPowerIds) {
+                if (!currentPowers.contains(groupId)) {
+                    addUserPowerAssociation(h2Driver, userId, groupId);
+                }
+            }
+        }
+    }
+
+    private void addUserGroupAssociation(H2ExampleDriver h2Driver, String groupId, String userId) throws ConnectorException {
+        try {
+            String sql = "INSERT INTO DEMO_USERS_XREF (group_id, user_id) VALUES (?,?)";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(groupId));
+            stmt.setInt(2, Integer.parseInt(userId));
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
+    }
+
+    private void addUserPowerAssociation(H2ExampleDriver h2Driver, String powerId, String userId) throws ConnectorException {
+        try {
+            String sql = "INSERT INTO DEMO_USERS_POWERS_XREF (power_id, user_id) VALUES (?,?)";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(powerId));
+            stmt.setInt(2, Integer.parseInt(userId));
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
+    }
+
+    private void deleteUserGroupAssociation(H2ExampleDriver h2Driver, String groupId, String userId) throws ConnectorException {
+        try {
+            String sql = "DELETE FROM DEMO_USERS_XREF WHERE group_id = ? AND user_id = ?";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(groupId));
+            stmt.setInt(2, Integer.parseInt(userId));
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
+    }
+
+    private void deleteUserPowerAssociation(H2ExampleDriver h2Driver, String powerId, String userId) throws ConnectorException {
+        try {
+            String sql = "DELETE FROM DEMO_USERS_POWERS_XREF WHERE power_id = ? AND user_id = ?";
+            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+            stmt.setInt(1, Integer.parseInt(powerId));
+            stmt.setInt(2, Integer.parseInt(userId));
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            LOG.error("Error running statement", sqlE);
+            throw new ConnectorException(sqlE);
+        }
     }
 
 }

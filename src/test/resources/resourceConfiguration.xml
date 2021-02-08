@@ -230,6 +230,78 @@
         </definition>
     </schema>
     <schemaHandling>
+
+        <objectType>
+            <kind>entitlement</kind>
+            <intent>power</intent>
+            <displayName>H2Example Power</displayName>
+            <objectClass>ri:CustomPowerObjectClass</objectClass>
+            <attribute>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:POWER_ID</c:ref>
+                <displayName>Power Id</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <inbound>
+                    <target>
+                        <c:path>$focus/identifier</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:POWER_NAME</c:ref>
+                <displayName>Power Name</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>true</add>
+                        <modify>true</modify>
+                    </access>
+                </limitations>
+                <outbound>
+                    <source>
+                        <c:path>$focus/name</c:path>
+                    </source>
+                </outbound>
+                <inbound>
+                    <target>
+                        <c:path>$focus/name</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">icfs:name</c:ref>
+                <displayName>ConnId Name</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">icfs:uid</c:ref>
+                <displayName>ConnId Id</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <inbound>
+                    <target>
+                        <c:path>$focus/identifier</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+        </objectType>
+
         <objectType id="2">
             <kind>entitlement</kind>
             <intent>privilege</intent>
@@ -419,6 +491,41 @@
                     </target>
                 </inbound>
             </attribute>
+
+            <association>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:UserToPowerLink</c:ref>
+                <displayName>H2Example User to Power assignments</displayName>
+                <inbound>
+                    <strength>strong</strength>
+                    <expression>
+                        <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
+                            <targetType>RoleType</targetType>
+                            <filter>
+                                <q:equal>
+                                    <q:path>name</q:path>
+                                    <expression>
+                                        <trace>true</trace>
+                                        <script>
+                                            <code>
+                                                return entitlement?.getName();
+                                            </code>
+                                        </script>
+                                    </expression>
+                                </q:equal>
+                            </filter>
+                        </assignmentTargetSearch>
+                    </expression>
+                    <target>
+                        <c:path>assignment</c:path>
+                    </target>
+                </inbound>
+                <kind>entitlement</kind>
+                <intent>power</intent>
+                <direction>subjectToObject</direction>
+                <associationAttribute>ri:POWER_IDS</associationAttribute>
+                <valueAttribute>icfs:uid</valueAttribute>
+            </association>
+
             <association id="26">
                 <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:UserToGroupLink</c:ref>
                 <displayName>H2Example User to Team assignments</displayName>
@@ -478,6 +585,59 @@
         </native>
     </capabilities>
     <synchronization>
+
+
+        <objectSynchronization>
+            <objectClass>ri:CustomPowerObjectClass</objectClass>
+            <kind>entitlement</kind>
+            <intent>power</intent>
+            <focusType>c:RoleType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:or>
+                    <q:equal>
+                        <q:path>identifier</q:path>
+                        <expression>
+                            <path xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">$account/attributes/icfs:uid</path>
+                        </expression>
+                    </q:equal>
+                    <q:equal>
+                        <q:path>name</q:path>
+                        <expression>
+                            <path xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">$account/attributes/icfs:name</path>
+                        </expression>
+                    </q:equal>
+                </q:or>
+            </correlation>
+            <objectTemplateRef oid="45995fec-d5c1-45e6-b62e-5c41eeeb92b8"/>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>deleted</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                </action>
+            </reaction>
+        </objectSynchronization>
+
+
         <objectSynchronization>
             <objectClass>ri:GroupObjectClass</objectClass>
             <kind>entitlement</kind>

@@ -15,10 +15,10 @@ package com.exclamationlabs.connid.base.h2example;
 
 import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
-import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorConfiguration;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleGroupsAdapter;
+import com.exclamationlabs.connid.base.h2example.adapter.H2ExamplePowersAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleUsersAdapter;
 import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.driver.H2ExampleDriver;
@@ -44,7 +44,7 @@ public class H2ExampleConnector extends BaseFullAccessConnector {
             }
         });
         setDriver(new H2ExampleDriver());
-        setAdapters(new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter());
+        setAdapters(new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter(), new H2ExamplePowersAdapter());
     }
 
 }

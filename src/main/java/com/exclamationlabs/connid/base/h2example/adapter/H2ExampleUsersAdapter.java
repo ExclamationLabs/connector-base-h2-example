@@ -19,7 +19,6 @@ import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
 import java.util.ArrayList;
@@ -54,6 +53,7 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
         result.add(new ConnectorAttribute(TIME_ZONE.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(DESCRIPTION.name(), STRING));
         result.add(new ConnectorAttribute(GROUP_IDS.name(), ASSIGNMENT_IDENTIFIER, MULTIVALUED));
+        result.add(new ConnectorAttribute(POWER_IDS.name(), ASSIGNMENT_IDENTIFIER, MULTIVALUED));
         return result;
     }
 
@@ -81,6 +81,7 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
         attributes.add(AttributeBuilder.build(DESCRIPTION.name(), user.getDescription()));
         attributes.add(AttributeBuilder.build(TIME_ZONE.name(), user.getTimezone()));
         attributes.add(AttributeBuilder.build(GROUP_IDS.name(), user.getGroupIds()));
+        attributes.add(AttributeBuilder.build(POWER_IDS.name(), user.getPowerIds()));
 
         return attributes;
     }

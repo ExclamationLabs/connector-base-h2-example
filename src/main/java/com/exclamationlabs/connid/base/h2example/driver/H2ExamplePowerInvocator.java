@@ -14,7 +14,7 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
+import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
@@ -27,19 +27,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleGroup> {
+public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver, H2ExamplePower> {
 
-    private static final Log LOG = Log.getLog(H2ExampleGroupInvocator.class);
+    private static final Log LOG = Log.getLog(H2ExamplePowerInvocator.class);
 
     @Override
-    public String create(H2ExampleDriver h2Driver, H2ExampleGroup h2ExampleGroup, Map<String, List<String>> map) throws ConnectorException {
+    public String create(H2ExampleDriver h2Driver, H2ExamplePower h2ExamplePower, Map<String, List<String>> map) throws ConnectorException {
         int newId = new Random().nextInt();
         try {
-            String sql = "INSERT INTO DEMO_GROUPS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
+            String sql = "INSERT INTO DEMO_POWERS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
             stmt.setInt(1, newId);
-            stmt.setString(2, h2ExampleGroup.getName());
-            stmt.setString(3, h2ExampleGroup.getDescription());
+            stmt.setString(2, h2ExamplePower.getName());
+            stmt.setString(3, h2ExamplePower.getDescription());
             stmt.executeUpdate();
             stmt.close();
 
@@ -51,15 +51,15 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public void update(H2ExampleDriver h2Driver, String groupId, H2ExampleGroup h2ExampleGroup, Map<String, List<String>> map) throws ConnectorException {
-        if (h2ExampleGroup.getDescription() == null) {
+    public void update(H2ExampleDriver h2Driver, String powerId, H2ExamplePower power, Map<String, List<String>> map) throws ConnectorException {
+        if (power.getDescription() == null) {
             return;
         }
         try {
-            String sql = "UPDATE DEMO_GROUPS SET DESCRIPTION = ? WHERE ID = ?";
+            String sql = "UPDATE DEMO_POWERS SET DESCRIPTION = ? WHERE ID = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setString(1, h2ExampleGroup.getDescription());
-            stmt.setInt(2, Integer.parseInt(groupId));
+            stmt.setString(1, power.getDescription());
+            stmt.setInt(2, Integer.parseInt(powerId));
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException sqlE) {
@@ -69,11 +69,11 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public void delete(H2ExampleDriver h2Driver, String groupId) throws ConnectorException {
+    public void delete(H2ExampleDriver h2Driver, String powerId) throws ConnectorException {
         try {
-            String sql = "DELETE FROM DEMO_GROUPS WHERE ID = ?";
+            String sql = "DELETE FROM DEMO_POWERS WHERE ID = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
+            stmt.setInt(1, Integer.parseInt(powerId));
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException sqlE) {
@@ -83,18 +83,18 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public List<H2ExampleGroup> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
-        List<H2ExampleGroup> groups = new ArrayList<>();
+    public List<H2ExamplePower> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
+        List<H2ExamplePower> powers = new ArrayList<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
-            String sql = "SELECT * FROM DEMO_GROUPS ORDER BY NAME ASC";
+            String sql = "SELECT * FROM DEMO_POWERS ORDER BY NAME ASC";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()) {
-                H2ExampleGroup group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
-                groups.add(group);
+                H2ExamplePower power = new H2ExamplePower();
+                power.setId(rs.getString("ID"));
+                power.setName(rs.getString("NAME"));
+                power.setDescription(rs.getString("DESCRIPTION"));
+                powers.add(power);
             }
             rs.close();
             stmt.close();
@@ -102,22 +102,22 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
             LOG.error("Error running statement", sqlE);
             throw new ConnectorException(sqlE);
         }
-        return groups;
+        return powers;
     }
 
     @Override
-    public H2ExampleGroup getOne(H2ExampleDriver h2Driver, String groupId) throws ConnectorException {
-        H2ExampleGroup group = null;
+    public H2ExamplePower getOne(H2ExampleDriver h2Driver, String powerId) throws ConnectorException {
+        H2ExamplePower power = null;
         try {
-            String sql = "SELECT * FROM DEMO_GROUPS WHERE ID = ?";
+            String sql = "SELECT * FROM DEMO_POWERS WHERE ID = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
+            stmt.setInt(1, Integer.parseInt(powerId));
             ResultSet rs = stmt.executeQuery();
             if(rs.next()) {
-                group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
+                power = new H2ExamplePower();
+                power.setId(rs.getString("ID"));
+                power.setName(rs.getString("NAME"));
+                power.setDescription(rs.getString("DESCRIPTION"));
             }
             rs.close();
             stmt.close();
@@ -125,18 +125,18 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
             LOG.error("Error running statement", sqlE);
             throw new ConnectorException(sqlE);
         }
-        return group;
+        return power;
     }
 
-    void createInitialGroups(H2ExampleDriver driver) {
-        H2ExampleGroup group1 = new H2ExampleGroup();
-        group1.setName("New Mutants");
-        group1.setDescription("Mutant Team 1");
-        create(driver, group1, null);
+    void createInitialPowers(H2ExampleDriver driver) {
+        H2ExamplePower power1 = new H2ExamplePower();
+        power1.setName("Flight");
+        power1.setDescription("Ability to fly");
+        create(driver, power1, null);
 
-        H2ExampleGroup group2 = new H2ExampleGroup();
-        group2.setName("X-Factor");
-        group2.setDescription("Mutant Team 2");
-        create(driver, group2, null);
+        H2ExamplePower power2 = new H2ExamplePower();
+        power2.setName("Invisibility");
+        power2.setDescription("Ability to turn invisible");
+        create(driver, power2, null);
     }
 }

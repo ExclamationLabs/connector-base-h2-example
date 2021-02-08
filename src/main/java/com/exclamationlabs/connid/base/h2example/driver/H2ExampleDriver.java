@@ -18,6 +18,7 @@ import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConf
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.BaseDriver;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
+import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -43,6 +44,7 @@ public class H2ExampleDriver extends BaseDriver {
     public H2ExampleDriver() {
         addInvocator(H2ExampleUser.class, new H2ExampleUserInvocator());
         addInvocator(H2ExampleGroup.class, new H2ExampleGroupInvocator());
+        addInvocator(H2ExamplePower.class, new H2ExamplePowerInvocator());
     }
 
     @Override
@@ -64,7 +66,13 @@ public class H2ExampleDriver extends BaseDriver {
             sql = "DROP TABLE IF EXISTS DEMO_GROUPS";
             stmt.executeUpdate(sql);
 
+            sql = "DROP TABLE IF EXISTS DEMO_POWERS";
+            stmt.executeUpdate(sql);
+
             sql = "DROP TABLE IF EXISTS DEMO_USERS_XREF";
+            stmt.executeUpdate(sql);
+
+            sql = "DROP TABLE IF EXISTS DEMO_USERS_POWERS_XREF";
             stmt.executeUpdate(sql);
 
             sql = "CREATE TABLE DEMO_USERS (id INTEGER NOT NULL, " +
@@ -77,8 +85,16 @@ public class H2ExampleDriver extends BaseDriver {
                     "DESCRIPTION VARCHAR(255), PRIMARY KEY (id))";
             stmt.executeUpdate(sql);
 
+            sql = "CREATE TABLE DEMO_POWERS (ID INTEGER NOT NULL, NAME VARCHAR(255), " +
+                    "DESCRIPTION VARCHAR(255), PRIMARY KEY (id))";
+            stmt.executeUpdate(sql);
+
             sql = "CREATE TABLE DEMO_USERS_XREF (user_id INTEGER NOT NULL, " +
                     "group_id INTEGER NOT NULL, PRIMARY KEY (user_id, group_id))";
+            stmt.executeUpdate(sql);
+
+            sql = "CREATE TABLE DEMO_USERS_POWERS_XREF (user_id INTEGER NOT NULL, " +
+                    "power_id INTEGER NOT NULL, PRIMARY KEY (user_id, power_id))";
             stmt.executeUpdate(sql);
             stmt.close();
 
@@ -89,6 +105,10 @@ public class H2ExampleDriver extends BaseDriver {
             H2ExampleGroupInvocator groupInvocator = (H2ExampleGroupInvocator)
                     getInvocator(H2ExampleGroup.class);
             groupInvocator.createInitialGroups(this);
+
+            H2ExamplePowerInvocator powerInvocator = (H2ExamplePowerInvocator)
+                    getInvocator(H2ExamplePower.class);
+            powerInvocator.createInitialPowers(this);
         } catch (ClassNotFoundException | SQLException e) {
             LOG.error("Error creating connection", e);
             throw new ConnectorException(e);
