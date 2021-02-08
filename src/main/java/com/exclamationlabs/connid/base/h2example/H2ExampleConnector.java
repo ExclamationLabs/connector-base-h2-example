@@ -13,31 +13,22 @@
 
 package com.exclamationlabs.connid.base.h2example;
 
-import com.exclamationlabs.connid.base.connector.BaseConnector;
-import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeMapBuilder;
+import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
-import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
+import com.exclamationlabs.connid.base.connector.configuration.ConnectorConfiguration;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleGroupsAdapter;
+import com.exclamationlabs.connid.base.h2example.adapter.H2ExamplePowersAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleUsersAdapter;
-import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleGroupAttribute;
-import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute;
 import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.driver.H2ExampleDriver;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorSecurityException;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
 import java.util.Set;
 
-import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.STRING;
-import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute.*;
-import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleGroupAttribute.*;
-import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.*;
-
 @ConnectorClass(displayNameKey = "h2example.connector.display", configurationClass = H2ExampleConfiguration.class)
-public class H2ExampleConnector extends BaseConnector<H2ExampleUser, H2ExampleGroup> {
+public class H2ExampleConnector extends BaseFullAccessConnector {
 
     public H2ExampleConnector() {
 
@@ -48,27 +39,12 @@ public class H2ExampleConnector extends BaseConnector<H2ExampleUser, H2ExampleGr
             }
 
             @Override
-            public String authenticate(BaseConnectorConfiguration baseConnectorConfiguration) throws ConnectorSecurityException {
+            public String authenticate(ConnectorConfiguration connectorConfiguration) throws ConnectorSecurityException {
                 return "good";
             }
         });
         setDriver(new H2ExampleDriver());
-        setUsersAdapter(new H2ExampleUsersAdapter());
-        setGroupsAdapter(new H2ExampleGroupsAdapter());
-        setUserAttributes( new ConnectorAttributeMapBuilder<>(H2ExampleUserAttribute.class)
-                .add(USER_ID, STRING, NOT_UPDATEABLE)
-                .add(FIRST_NAME, STRING, NOT_UPDATEABLE)
-                .add(LAST_NAME, STRING, NOT_UPDATEABLE)
-                .add(EMAIL, STRING, NOT_UPDATEABLE)
-                .add(TIME_ZONE, STRING, NOT_UPDATEABLE)
-                .add(DESCRIPTION, STRING)
-                .add(GROUP_IDS, STRING, MULTIVALUED)
-                .build());
-        setGroupAttributes(new ConnectorAttributeMapBuilder<>(H2ExampleGroupAttribute.class)
-                .add(GROUP_ID, STRING, NOT_UPDATEABLE)
-                .add(GROUP_NAME, STRING, REQUIRED, NOT_UPDATEABLE)
-                .add(GROUP_DESCRIPTION, STRING)
-                .build());
+        setAdapters(new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter(), new H2ExamplePowersAdapter());
     }
 
 }

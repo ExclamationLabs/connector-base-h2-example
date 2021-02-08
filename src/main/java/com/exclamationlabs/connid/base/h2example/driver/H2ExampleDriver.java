@@ -16,8 +16,9 @@ package com.exclamationlabs.connid.base.h2example.driver;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
 import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
-import com.exclamationlabs.connid.base.connector.driver.Driver;
+import com.exclamationlabs.connid.base.connector.driver.BaseDriver;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
+import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -29,7 +30,7 @@ import java.util.*;
  * This is an example Base connector driver using a just-in-time H2 in-memory database
  * for Identity Access Management.
  */
-public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
+public class H2ExampleDriver extends BaseDriver {
 
     private static final Log LOG = Log.getLog(H2ExampleDriver.class);
 
@@ -39,6 +40,12 @@ public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
     private static final String PASS = "";
 
     private Connection connection;
+
+    public H2ExampleDriver() {
+        addInvocator(H2ExampleUser.class, new H2ExampleUserInvocator());
+        addInvocator(H2ExampleGroup.class, new H2ExampleGroupInvocator());
+        addInvocator(H2ExamplePower.class, new H2ExamplePowerInvocator());
+    }
 
     @Override
     public Set<ConnectorProperty> getRequiredPropertyNames() {
@@ -59,7 +66,13 @@ public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
             sql = "DROP TABLE IF EXISTS DEMO_GROUPS";
             stmt.executeUpdate(sql);
 
+            sql = "DROP TABLE IF EXISTS DEMO_POWERS";
+            stmt.executeUpdate(sql);
+
             sql = "DROP TABLE IF EXISTS DEMO_USERS_XREF";
+            stmt.executeUpdate(sql);
+
+            sql = "DROP TABLE IF EXISTS DEMO_USERS_POWERS_XREF";
             stmt.executeUpdate(sql);
 
             sql = "CREATE TABLE DEMO_USERS (id INTEGER NOT NULL, " +
@@ -72,13 +85,30 @@ public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
                     "DESCRIPTION VARCHAR(255), PRIMARY KEY (id))";
             stmt.executeUpdate(sql);
 
+            sql = "CREATE TABLE DEMO_POWERS (ID INTEGER NOT NULL, NAME VARCHAR(255), " +
+                    "DESCRIPTION VARCHAR(255), PRIMARY KEY (id))";
+            stmt.executeUpdate(sql);
+
             sql = "CREATE TABLE DEMO_USERS_XREF (user_id INTEGER NOT NULL, " +
                     "group_id INTEGER NOT NULL, PRIMARY KEY (user_id, group_id))";
             stmt.executeUpdate(sql);
+
+            sql = "CREATE TABLE DEMO_USERS_POWERS_XREF (user_id INTEGER NOT NULL, " +
+                    "power_id INTEGER NOT NULL, PRIMARY KEY (user_id, power_id))";
+            stmt.executeUpdate(sql);
             stmt.close();
 
-            createInitialUsers();
-            createInitialGroups();
+            H2ExampleUserInvocator userInvocator = (H2ExampleUserInvocator)
+                    getInvocator(H2ExampleUser.class);
+            userInvocator.createInitialUsers(this);
+
+            H2ExampleGroupInvocator groupInvocator = (H2ExampleGroupInvocator)
+                    getInvocator(H2ExampleGroup.class);
+            groupInvocator.createInitialGroups(this);
+
+            H2ExamplePowerInvocator powerInvocator = (H2ExamplePowerInvocator)
+                    getInvocator(H2ExamplePower.class);
+            powerInvocator.createInitialPowers(this);
         } catch (ClassNotFoundException | SQLException e) {
             LOG.error("Error creating connection", e);
             throw new ConnectorException(e);
@@ -111,286 +141,7 @@ public class H2ExampleDriver implements Driver<H2ExampleUser, H2ExampleGroup> {
         }
     }
 
-    @Override
-    public String createUser(H2ExampleUser h2ExampleUser) throws ConnectorException {
-        int newId = new Random().nextInt();
-        try {
-            String sql = "INSERT INTO DEMO_USERS (id, first_name, last_name, email, " +
-                    "user_description, timezone) VALUES (?,?,?,?,?,?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, newId);
-            stmt.setString(2, h2ExampleUser.getFirstName());
-            stmt.setString(3, h2ExampleUser.getLastName());
-            stmt.setString(4, h2ExampleUser.getEmail());
-            stmt.setString(5, h2ExampleUser.getDescription());
-            stmt.setString(6, h2ExampleUser.getTimezone());
-            stmt.executeUpdate();
-            stmt.close();
-
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return "" + newId;
-    }
-
-    @Override
-    public String createGroup(H2ExampleGroup h2ExampleGroup) throws ConnectorException {
-        int newId = new Random().nextInt();
-        try {
-            String sql = "INSERT INTO DEMO_GROUPS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, newId);
-            stmt.setString(2, h2ExampleGroup.getName());
-            stmt.setString(3, h2ExampleGroup.getDescription());
-            stmt.executeUpdate();
-            stmt.close();
-
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return "" + newId;
-    }
-
-    @Override
-    public void updateUser(String userId, H2ExampleUser h2ExampleUser) throws ConnectorException {
-        try {
-            String sql = "UPDATE DEMO_USERS SET user_description = ? WHERE id = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, h2ExampleUser.getDescription());
-            stmt.setInt(2, Integer.parseInt(userId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    @Override
-    public void updateGroup(String groupId, H2ExampleGroup h2ExampleGroup) throws ConnectorException {
-        if (h2ExampleGroup.getDescription() == null) {
-            return;
-        }
-        try {
-            String sql = "UPDATE DEMO_GROUPS SET DESCRIPTION = ? WHERE ID = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, h2ExampleGroup.getDescription());
-            stmt.setInt(2, Integer.parseInt(groupId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    @Override
-    public void deleteUser(String userId) throws ConnectorException {
-        try {
-            String sql = "DELETE FROM DEMO_USERS WHERE id = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(userId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    @Override
-    public void deleteGroup(String groupId) throws ConnectorException {
-        try {
-            String sql = "DELETE FROM DEMO_GROUPS WHERE ID = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    @Override
-    public List<H2ExampleUser> getUsers() throws ConnectorException {
-        List<H2ExampleUser> users = new ArrayList<>();
-        try {
-            Statement stmt = connection.createStatement();
-            String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                H2ExampleUser user = loadUserFromResultSet(rs);
-                users.add(user);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return users;
-    }
-
-    @Override
-    public List<H2ExampleGroup> getGroups() throws ConnectorException {
-        List<H2ExampleGroup> groups = new ArrayList<>();
-        try {
-            Statement stmt = connection.createStatement();
-            String sql = "SELECT * FROM DEMO_GROUPS ORDER BY NAME ASC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                H2ExampleGroup group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
-                groups.add(group);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return groups;
-    }
-
-    @Override
-    public H2ExampleUser getUser(String userId) throws ConnectorException {
-        H2ExampleUser user = null;
-        try {
-            String sql = "SELECT * FROM DEMO_USERS WHERE id = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(userId));
-
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()) {
-                user = loadUserFromResultSet(rs);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-
-        // Load groups for user
-        try {
-            List<String> groupIds = new ArrayList<>();
-            String sql = "SELECT group_id FROM DEMO_USERS_XREF WHERE user_id = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(userId));
-
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                groupIds.add(rs.getString("group_id"));
-            }
-            if (!groupIds.isEmpty()) {
-                user.setGroupIds(groupIds);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-
-        return user;
-    }
-
-    @Override
-    public H2ExampleGroup getGroup(String groupId) throws ConnectorException {
-        H2ExampleGroup group = null;
-        try {
-            String sql = "SELECT * FROM DEMO_GROUPS WHERE ID = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()) {
-                group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return group;
-    }
-
-    @Override
-    public void addGroupToUser(String groupId, String userId) throws ConnectorException {
-        try {
-            String sql = "INSERT INTO DEMO_USERS_XREF (group_id, user_id) VALUES (?,?)";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            stmt.setInt(2, Integer.parseInt(userId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    @Override
-    public void removeGroupFromUser(String groupId, String userId) throws ConnectorException {
-        try {
-            String sql = "DELETE FROM DEMO_USERS_XREF WHERE group_id = ? AND user_id = ?";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            stmt.setInt(2, Integer.parseInt(userId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-    }
-
-    private H2ExampleUser loadUserFromResultSet(ResultSet rs) throws SQLException {
-        H2ExampleUser user = new H2ExampleUser();
-        user.setId(rs.getString("id"));
-        user.setFirstName(rs.getString("first_name"));
-        user.setLastName(rs.getString("last_name"));
-        user.setDescription(rs.getString("user_description"));
-        user.setTimezone(rs.getString("timezone"));
-        user.setEmail(rs.getString("email"));
-        return user;
-    }
-
-    private void createInitialUsers() {
-        H2ExampleUser person = new H2ExampleUser();
-        person.setFirstName("Peter");
-        person.setLastName("Rasputin");
-        person.setEmail("peter@xmen.com");
-        person.setTimezone("Central");
-        person.setDescription("X-Man");
-        createUser(person);
-
-        person = new H2ExampleUser();
-        person.setFirstName("Scott");
-        person.setLastName("Summers");
-        person.setEmail("scott@xmen.com");
-        person.setTimezone("Central");
-        person.setDescription("X-Man");
-        createUser(person);
-    }
-
-    private void createInitialGroups() {
-        H2ExampleGroup group1 = new H2ExampleGroup();
-        group1.setName("New Mutants");
-        group1.setDescription("Mutant Team 1");
-        createGroup(group1);
-
-        H2ExampleGroup group2 = new H2ExampleGroup();
-        group2.setName("X-Factor");
-        group2.setDescription("Mutant Team 2");
-        createGroup(group2);
+    Connection getConnection() {
+        return connection;
     }
 }

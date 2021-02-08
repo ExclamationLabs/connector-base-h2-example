@@ -16,7 +16,7 @@ package com.exclamationlabs.connid.base.h2example.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
-import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
+import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
@@ -26,46 +26,46 @@ import java.util.List;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.STRING;
-import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleGroupAttribute.*;
+import static com.exclamationlabs.connid.base.h2example.attribute.H2ExamplePowerAttribute.*;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExampleGroupsAdapter extends BaseAdapter<H2ExampleGroup> {
+public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower> {
 
     @Override
     public ObjectClass getType() {
-        return ObjectClass.GROUP;
+        return new ObjectClass("Power");
     }
 
     @Override
-    public Class<H2ExampleGroup> getIdentityModelClass() {
-        return H2ExampleGroup.class;
+    public Class<H2ExamplePower> getIdentityModelClass() {
+        return H2ExamplePower.class;
     }
 
     @Override
     public List<ConnectorAttribute> getConnectorAttributes() {
         List<ConnectorAttribute> result = new ArrayList<>();
-        result.add(new ConnectorAttribute(GROUP_ID.name(), STRING, NOT_UPDATEABLE));
-        result.add(new ConnectorAttribute(GROUP_NAME.name(), STRING, NOT_UPDATEABLE));
-        result.add(new ConnectorAttribute(GROUP_DESCRIPTION.name(), STRING));
+        result.add(new ConnectorAttribute(POWER_ID.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(POWER_NAME.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(POWER_DESCRIPTION.name(), STRING));
         return result;
     }
 
     @Override
-    protected H2ExampleGroup constructModel(Set<Attribute> attributes, boolean creation) {
-        H2ExampleGroup group = new H2ExampleGroup();
-        group.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
-        group.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_NAME));
-        group.setDescription(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, GROUP_DESCRIPTION));
-        return group;
+    protected H2ExamplePower constructModel(Set<Attribute> attributes, boolean creation) {
+        H2ExamplePower power = new H2ExamplePower();
+        power.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
+        power.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, POWER_NAME));
+        power.setDescription(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, POWER_DESCRIPTION));
+        return power;
     }
 
     @Override
-    protected List<Attribute> constructAttributes(H2ExampleGroup group) {
+    protected List<Attribute> constructAttributes(H2ExamplePower power) {
         List<Attribute> attributes = new ArrayList<>();
 
-        attributes.add(AttributeBuilder.build(GROUP_ID.name(), group.getId()));
-        attributes.add(AttributeBuilder.build(GROUP_NAME.name(), group.getName()));
-        attributes.add(AttributeBuilder.build(GROUP_DESCRIPTION.name(), group.getDescription()));
+        attributes.add(AttributeBuilder.build(POWER_ID.name(), power.getId()));
+        attributes.add(AttributeBuilder.build(POWER_NAME.name(), power.getName()));
+        attributes.add(AttributeBuilder.build(POWER_DESCRIPTION.name(), power.getDescription()));
 
         return attributes;
     }

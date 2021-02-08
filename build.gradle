@@ -32,9 +32,9 @@ dependencies {
     // H2 database support - for this example project
     implementation "com.h2database:h2:1.4.200"
 
-    implementation 'com.exclamationlabs.connid:connector-base:0.1-+'
+    implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 
-    testImplementation 'com.exclamationlabs.connid:connector-base-test-support:0.1-+'
+    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'
 }
 

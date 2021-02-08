@@ -63,13 +63,10 @@ public class H2ExampleConnectorIntegrationTest extends IntegrationTest {
         connector.dispose();
     }
 
-    /*
     @Test
     public void testConnection() {
         connector.test();
     }
-
-     */
 
     @Test
     public void test010GroupCreate() {

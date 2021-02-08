@@ -13,17 +13,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" oid="0bab0e8a-4f3f-4bdb-a554-ddca5416872e" version="15">
-    <name>H2 Testing</name>
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" oid="d017b44d-caf9-4931-a50b-567345bb426e" version="5">
+    <name>H2 Testing 1.0</name>
     <metadata>
-        <modifyTimestamp>2020-06-28T21:16:13.995-05:00</modifyTimestamp>
+        <modifyTimestamp>2021-02-07T09:34:50.087-06:00</modifyTimestamp>
         <modifierRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
             <!-- administrator -->
         </modifierRef>
         <modifyChannel>http://midpoint.evolveum.com/xml/ns/public/gui/channels-3#user</modifyChannel>
     </metadata>
     <operationExecution id="1">
-        <timestamp>2020-06-26T14:22:57.202-05:00</timestamp>
+        <timestamp>2021-02-07T09:34:50.122-06:00</timestamp>
         <operation>
             <objectDelta>
                 <t:changeType>modify</t:changeType>
@@ -33,30 +33,9 @@
                 <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
                 <status>success</status>
                 <importance>normal</importance>
-                <token>1000000000000000239</token>
+                <token>1000000000000000528</token>
             </executionResult>
-            <objectName>H2 Testing</objectName>
-        </operation>
-        <status>success</status>
-        <initiatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
-            <!-- administrator -->
-        </initiatorRef>
-        <channel>http://midpoint.evolveum.com/xml/ns/public/gui/channels-3#user</channel>
-    </operationExecution>
-    <operationExecution id="28">
-        <timestamp>2020-06-28T21:16:14.070-05:00</timestamp>
-        <operation>
-            <objectDelta>
-                <t:changeType>modify</t:changeType>
-                <t:objectType>c:ResourceType</t:objectType>
-            </objectDelta>
-            <executionResult>
-                <operation>com.evolveum.midpoint.model.impl.lens.ChangeExecutor.executeDelta</operation>
-                <status>success</status>
-                <importance>normal</importance>
-                <token>1000000000000000143</token>
-            </executionResult>
-            <objectName>H2 Testing</objectName>
+            <objectName>H2 Testing 1.0</objectName>
         </operation>
         <status>success</status>
         <initiatorRef oid="00000000-0000-0000-0000-000000000002" relation="org:default" type="c:UserType">
@@ -69,18 +48,18 @@
     <operationalState>
         <lastAvailabilityStatus>up</lastAvailabilityStatus>
     </operationalState>
-    <connectorRef oid="966b52e6-e759-4c8b-b2d8-4f62527648a1" relation="org:default" type="c:ConnectorType">
-        <!-- ConnId com.exclamationlabs.connid.base.h2example.H2ExampleConnector v0.1 -->
+    <connectorRef oid="63374e24-3179-4905-93f3-5e2b62407c84" relation="org:default" type="c:ConnectorType">
+        <!-- ConnId com.exclamationlabs.connid.base.h2example.H2ExampleConnector v1.0.0 -->
     </connectorRef>
     <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
-        <icfc:configurationProperties xmlns:gen875="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/connector-base-h2-example/com.exclamationlabs.connid.base.h2example.H2ExampleConnector">
-            <gen875:configurationFilePath>somewhere</gen875:configurationFilePath>
+        <icfc:configurationProperties xmlns:gen520="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/connector-base-h2-example/com.exclamationlabs.connid.base.h2example.H2ExampleConnector">
+            <gen520:configurationFilePath>test</gen520:configurationFilePath>
         </icfc:configurationProperties>
     </connectorConfiguration>
     <schema>
         <cachingMetadata>
-            <retrievalTimestamp>2020-06-28T21:16:14.530-05:00</retrievalTimestamp>
-            <serialNumber>f6c8321fc8820362-cbb4b4313973157f</serialNumber>
+            <retrievalTimestamp>2021-02-07T09:34:54.111-06:00</retrievalTimestamp>
+            <serialNumber>d7d9eb28ffae7900-a396836ba6e1f245</serialNumber>
         </cachingMetadata>
         <definition>
             <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3" xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3" xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" elementFormDefault="qualified" targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">
@@ -99,7 +78,7 @@
                         </xsd:appinfo>
                     </xsd:annotation>
                     <xsd:sequence>
-                        <xsd:element name="GROUP_NAME" type="xsd:string">
+                        <xsd:element minOccurs="0" name="GROUP_NAME" type="xsd:string">
                             <xsd:annotation>
                                 <xsd:appinfo>
                                     <a:displayOrder>120</a:displayOrder>
@@ -251,6 +230,78 @@
         </definition>
     </schema>
     <schemaHandling>
+
+        <objectType>
+            <kind>entitlement</kind>
+            <intent>power</intent>
+            <displayName>H2Example Power</displayName>
+            <objectClass>ri:CustomPowerObjectClass</objectClass>
+            <attribute>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:POWER_ID</c:ref>
+                <displayName>Power Id</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <inbound>
+                    <target>
+                        <c:path>$focus/identifier</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:POWER_NAME</c:ref>
+                <displayName>Power Name</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>true</add>
+                        <modify>true</modify>
+                    </access>
+                </limitations>
+                <outbound>
+                    <source>
+                        <c:path>$focus/name</c:path>
+                    </source>
+                </outbound>
+                <inbound>
+                    <target>
+                        <c:path>$focus/name</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">icfs:name</c:ref>
+                <displayName>ConnId Name</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+            </attribute>
+            <attribute>
+                <c:ref xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">icfs:uid</c:ref>
+                <displayName>ConnId Id</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <inbound>
+                    <target>
+                        <c:path>$focus/identifier</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+        </objectType>
+
         <objectType id="2">
             <kind>entitlement</kind>
             <intent>privilege</intent>
@@ -440,6 +491,41 @@
                     </target>
                 </inbound>
             </attribute>
+
+            <association>
+                <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:UserToPowerLink</c:ref>
+                <displayName>H2Example User to Power assignments</displayName>
+                <inbound>
+                    <strength>strong</strength>
+                    <expression>
+                        <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
+                            <targetType>RoleType</targetType>
+                            <filter>
+                                <q:equal>
+                                    <q:path>name</q:path>
+                                    <expression>
+                                        <trace>true</trace>
+                                        <script>
+                                            <code>
+                                                return entitlement?.getName();
+                                            </code>
+                                        </script>
+                                    </expression>
+                                </q:equal>
+                            </filter>
+                        </assignmentTargetSearch>
+                    </expression>
+                    <target>
+                        <c:path>assignment</c:path>
+                    </target>
+                </inbound>
+                <kind>entitlement</kind>
+                <intent>power</intent>
+                <direction>subjectToObject</direction>
+                <associationAttribute>ri:POWER_IDS</associationAttribute>
+                <valueAttribute>icfs:uid</valueAttribute>
+            </association>
+
             <association id="26">
                 <c:ref xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:UserToGroupLink</c:ref>
                 <displayName>H2Example User to Team assignments</displayName>
@@ -499,6 +585,59 @@
         </native>
     </capabilities>
     <synchronization>
+
+
+        <objectSynchronization>
+            <objectClass>ri:CustomPowerObjectClass</objectClass>
+            <kind>entitlement</kind>
+            <intent>power</intent>
+            <focusType>c:RoleType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:or>
+                    <q:equal>
+                        <q:path>identifier</q:path>
+                        <expression>
+                            <path xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">$account/attributes/icfs:uid</path>
+                        </expression>
+                    </q:equal>
+                    <q:equal>
+                        <q:path>name</q:path>
+                        <expression>
+                            <path xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3">$account/attributes/icfs:name</path>
+                        </expression>
+                    </q:equal>
+                </q:or>
+            </correlation>
+            <objectTemplateRef oid="45995fec-d5c1-45e6-b62e-5c41eeeb92b8"/>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>deleted</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                </action>
+            </reaction>
+        </objectSynchronization>
+
+
         <objectSynchronization>
             <objectClass>ri:GroupObjectClass</objectClass>
             <kind>entitlement</kind>
