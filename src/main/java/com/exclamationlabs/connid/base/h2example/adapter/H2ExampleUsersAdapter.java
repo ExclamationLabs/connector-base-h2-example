@@ -67,6 +67,10 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
         user.setEmail(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL));
         user.setTimezone(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, TIME_ZONE));
         user.setDescription(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, DESCRIPTION));
+
+        user.setGroupIds(readAssignments(attributes, GROUP_IDS));
+        user.setPowerIds(readAssignments(attributes, POWER_IDS));
+
         return user;
     }
 

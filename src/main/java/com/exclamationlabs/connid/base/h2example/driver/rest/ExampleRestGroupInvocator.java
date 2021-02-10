@@ -18,21 +18,20 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
-import java.util.Map;
 
 public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleGroup> {
 
     @Override
-    public String create(ExampleRestDriver driver, H2ExampleGroup model,
-                         Map<String, List<String>> assignmentIdentifiers) throws ConnectorException {
+    public String create(ExampleRestDriver driver, H2ExampleGroup model)
+            throws ConnectorException {
         H2ExampleGroup response = driver.executePostRequest(
                 "/groups", H2ExampleGroup.class, model);
         return response.getId();
     }
 
     @Override
-    public void update(ExampleRestDriver driver, String groupId, H2ExampleGroup model,
-                       Map<String, List<String>> assignmentIdentifiers) throws ConnectorException {
+    public void update(ExampleRestDriver driver, String groupId, H2ExampleGroup model)
+            throws ConnectorException {
         driver.executePatchRequest(
                 "/groups/" + groupId, null, model);
     }

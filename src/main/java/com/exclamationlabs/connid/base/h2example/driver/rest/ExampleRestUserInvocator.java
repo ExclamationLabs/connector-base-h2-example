@@ -18,21 +18,20 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
-import java.util.Map;
 
 public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleUser> {
 
     @Override
-    public String create(ExampleRestDriver driver, H2ExampleUser userModel,
-                         Map<String, List<String>> assignmentIdentifiers) throws ConnectorException {
+    public String create(ExampleRestDriver driver, H2ExampleUser userModel)
+            throws ConnectorException {
         H2ExampleUser response = driver.executePostRequest(
                 "/users", H2ExampleUser.class, userModel);
         return response.getId();
     }
 
     @Override
-    public void update(ExampleRestDriver driver, String userId, H2ExampleUser userModel,
-                       Map<String, List<String>> assignmentIdentifiers) throws ConnectorException {
+    public void update(ExampleRestDriver driver, String userId, H2ExampleUser userModel)
+            throws ConnectorException {
         driver.executePatchRequest(
                 "/users/" + userId, null, userModel);
     }

@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleGroup> {
@@ -32,7 +31,8 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     private static final Log LOG = Log.getLog(H2ExampleGroupInvocator.class);
 
     @Override
-    public String create(H2ExampleDriver h2Driver, H2ExampleGroup h2ExampleGroup, Map<String, List<String>> map) throws ConnectorException {
+    public String create(H2ExampleDriver h2Driver, H2ExampleGroup h2ExampleGroup)
+            throws ConnectorException {
         int newId = new Random().nextInt();
         try {
             String sql = "INSERT INTO DEMO_GROUPS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
@@ -51,7 +51,8 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public void update(H2ExampleDriver h2Driver, String groupId, H2ExampleGroup h2ExampleGroup, Map<String, List<String>> map) throws ConnectorException {
+    public void update(H2ExampleDriver h2Driver, String groupId, H2ExampleGroup h2ExampleGroup)
+            throws ConnectorException {
         if (h2ExampleGroup.getDescription() == null) {
             return;
         }
@@ -132,11 +133,11 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
         H2ExampleGroup group1 = new H2ExampleGroup();
         group1.setName("New Mutants");
         group1.setDescription("Mutant Team 1");
-        create(driver, group1, null);
+        create(driver, group1);
 
         H2ExampleGroup group2 = new H2ExampleGroup();
         group2.setName("X-Factor");
         group2.setDescription("Mutant Team 2");
-        create(driver, group2, null);
+        create(driver, group2);
     }
 }

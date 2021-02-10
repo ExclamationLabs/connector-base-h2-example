@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver, H2ExamplePower> {
@@ -32,7 +31,8 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
     private static final Log LOG = Log.getLog(H2ExamplePowerInvocator.class);
 
     @Override
-    public String create(H2ExampleDriver h2Driver, H2ExamplePower h2ExamplePower, Map<String, List<String>> map) throws ConnectorException {
+    public String create(H2ExampleDriver h2Driver, H2ExamplePower h2ExamplePower)
+            throws ConnectorException {
         int newId = new Random().nextInt();
         try {
             String sql = "INSERT INTO DEMO_POWERS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
@@ -51,7 +51,8 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public void update(H2ExampleDriver h2Driver, String powerId, H2ExamplePower power, Map<String, List<String>> map) throws ConnectorException {
+    public void update(H2ExampleDriver h2Driver, String powerId, H2ExamplePower power)
+            throws ConnectorException {
         if (power.getDescription() == null) {
             return;
         }
@@ -132,11 +133,11 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
         H2ExamplePower power1 = new H2ExamplePower();
         power1.setName("Flight");
         power1.setDescription("Ability to fly");
-        create(driver, power1, null);
+        create(driver, power1);
 
         H2ExamplePower power2 = new H2ExamplePower();
         power2.setName("Invisibility");
         power2.setDescription("Ability to turn invisible");
-        create(driver, power2, null);
+        create(driver, power2);
     }
 }

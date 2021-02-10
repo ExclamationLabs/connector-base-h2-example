@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleUser> {
@@ -32,7 +31,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     private static final Log LOG = Log.getLog(H2ExampleUserInvocator.class);
 
     @Override
-    public String create(H2ExampleDriver h2Driver, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
+    public String create(H2ExampleDriver h2Driver, H2ExampleUser h2ExampleUser)
+            throws ConnectorException {
         int newId = new Random().nextInt();
         try {
             String sql = "INSERT INTO DEMO_USERS (id, first_name, last_name, email, " +
@@ -60,7 +60,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public void update(H2ExampleDriver h2Driver, String userId, H2ExampleUser h2ExampleUser, Map<String, List<String>> map) throws ConnectorException {
+    public void update(H2ExampleDriver h2Driver, String userId, H2ExampleUser h2ExampleUser)
+            throws ConnectorException {
         try {
             String sql = "UPDATE DEMO_USERS SET user_description = ? WHERE id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -155,7 +156,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         person.setEmail("peter@xmen.com");
         person.setTimezone("Central");
         person.setDescription("X-Man");
-        create(h2Driver, person, null);
+        create(h2Driver, person);
 
         person = new H2ExampleUser();
         person.setFirstName("Scott");
@@ -163,7 +164,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         person.setEmail("scott@xmen.com");
         person.setTimezone("Central");
         person.setDescription("X-Man");
-        create(h2Driver, person, null);
+        create(h2Driver, person);
     }
 
     private H2ExampleUser loadUserFromResultSet(ResultSet rs) throws SQLException {
@@ -227,8 +228,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             currentGroups = loadGroups(h2Driver, userId);
 
             for (String groupId : currentGroups) {
-                if (!newGroupIds.contains(groupId)) {
-                    deleteUserGroupAssociation(h2Driver, userId, groupId);
+                if (newGroupIds == null || !newGroupIds.contains(groupId)) {
+                    deleteUserGroupAssociation(h2Driver, groupId, userId);
                 }
             }
         }
@@ -236,7 +237,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         if (newGroupIds != null) {
             for (String groupId : newGroupIds) {
                 if (!currentGroups.contains(groupId)) {
-                    addUserGroupAssociation(h2Driver, userId, groupId);
+                    addUserGroupAssociation(h2Driver, groupId, userId);
                 }
             }
         }
@@ -247,17 +248,17 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         if (isUpdate) {
             currentPowers = loadPowers(h2Driver, userId);
 
-            for (String groupId : currentPowers) {
-                if (!newPowerIds.contains(groupId)) {
-                    deleteUserPowerAssociation(h2Driver, userId, groupId);
+            for (String powerId : currentPowers) {
+                if (newPowerIds == null || !newPowerIds.contains(powerId)) {
+                    deleteUserPowerAssociation(h2Driver, powerId, userId);
                 }
             }
         }
 
         if (newPowerIds != null) {
-            for (String groupId : newPowerIds) {
-                if (!currentPowers.contains(groupId)) {
-                    addUserPowerAssociation(h2Driver, userId, groupId);
+            for (String powerId : newPowerIds) {
+                if (!currentPowers.contains(powerId)) {
+                    addUserPowerAssociation(h2Driver, powerId, userId);
                 }
             }
         }
