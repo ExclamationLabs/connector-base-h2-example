@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleGroup> {
@@ -84,7 +85,7 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public List<H2ExampleGroup> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
+    public List<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
         List<H2ExampleGroup> groups = new ArrayList<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
@@ -107,7 +108,7 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public H2ExampleGroup getOne(H2ExampleDriver h2Driver, String groupId) throws ConnectorException {
+    public H2ExampleGroup getOne(H2ExampleDriver h2Driver, String groupId, Map<String,Object> headerMap) throws ConnectorException {
         H2ExampleGroup group = null;
         try {
             String sql = "SELECT * FROM DEMO_GROUPS WHERE ID = ?";

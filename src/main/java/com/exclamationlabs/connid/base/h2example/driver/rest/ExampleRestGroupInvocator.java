@@ -18,6 +18,7 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
+import java.util.Map;
 
 public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleGroup> {
 
@@ -25,7 +26,7 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     public String create(ExampleRestDriver driver, H2ExampleGroup model)
             throws ConnectorException {
         H2ExampleGroup response = driver.executePostRequest(
-                "/groups", H2ExampleGroup.class, model);
+                "/groups", H2ExampleGroup.class, model).getResponseObject();
         return response.getId();
     }
 
@@ -42,15 +43,15 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     }
 
     @Override
-    public List<H2ExampleGroup> getAll(ExampleRestDriver driver) throws ConnectorException {
+    public List<H2ExampleGroup> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
         TestGroupsResponse response = driver.executeGetRequest(
-                "/groups", TestGroupsResponse.class);
+                "/groups", TestGroupsResponse.class).getResponseObject();
         return response.getGroups();
     }
 
     @Override
-    public H2ExampleGroup getOne(ExampleRestDriver driver, String groupId) throws ConnectorException {
-        return driver.executeGetRequest("/groups/" + groupId, H2ExampleGroup.class);
+    public H2ExampleGroup getOne(ExampleRestDriver driver, String groupId, Map<String,Object> headerMap) throws ConnectorException {
+        return driver.executeGetRequest("/groups/" + groupId, H2ExampleGroup.class).getResponseObject();
     }
 
     static class TestGroupsResponse {

@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver, H2ExamplePower> {
@@ -84,7 +85,7 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public List<H2ExamplePower> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
+    public List<H2ExamplePower> getAll(H2ExampleDriver h2Driver, Map<String, Object> headerMap) throws ConnectorException {
         List<H2ExamplePower> powers = new ArrayList<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
@@ -107,7 +108,7 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public H2ExamplePower getOne(H2ExampleDriver h2Driver, String powerId) throws ConnectorException {
+    public H2ExamplePower getOne(H2ExampleDriver h2Driver, String powerId, Map<String, Object> headers) throws ConnectorException {
         H2ExamplePower power = null;
         try {
             String sql = "SELECT * FROM DEMO_POWERS WHERE ID = ?";
