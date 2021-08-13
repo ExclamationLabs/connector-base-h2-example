@@ -37,7 +37,7 @@ public class H2ExampleConfiguration extends BaseConnectorConfiguration {
             helpMessageKey = "File path for the H2Example Configuration File",
             required = true)
     public String getConfigurationFilePath() {
-        return getMidPointConfigurationFilePath();
+        return innerGetMidPointConfigurationFilePath();
     }
 
     /**

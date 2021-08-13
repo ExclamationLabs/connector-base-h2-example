@@ -18,6 +18,7 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.List;
+import java.util.Map;
 
 public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleUser> {
 
@@ -25,7 +26,7 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     public String create(ExampleRestDriver driver, H2ExampleUser userModel)
             throws ConnectorException {
         H2ExampleUser response = driver.executePostRequest(
-                "/users", H2ExampleUser.class, userModel);
+                "/users", H2ExampleUser.class, userModel).getResponseObject();
         return response.getId();
     }
 
@@ -42,15 +43,15 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     }
 
     @Override
-    public List<H2ExampleUser> getAll(ExampleRestDriver driver) throws ConnectorException {
+    public List<H2ExampleUser> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
         TestUsersResponse usersResponse = driver.executeGetRequest(
-                "/users", TestUsersResponse.class);
+                "/users", TestUsersResponse.class).getResponseObject();
         return usersResponse.getUsers();
     }
 
     @Override
-    public H2ExampleUser getOne(ExampleRestDriver driver, String userId) throws ConnectorException {
-        return driver.executeGetRequest("/users/" + userId, H2ExampleUser.class);
+    public H2ExampleUser getOne(ExampleRestDriver driver, String userId, Map<String,Object> headerMap) throws ConnectorException {
+        return driver.executeGetRequest("/users/" + userId, H2ExampleUser.class).getResponseObject();
     }
 
     static class TestUsersResponse {

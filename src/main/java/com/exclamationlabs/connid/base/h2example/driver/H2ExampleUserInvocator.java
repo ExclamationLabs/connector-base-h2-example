@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleUser> {
@@ -93,7 +94,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public List<H2ExampleUser> getAll(H2ExampleDriver h2Driver) throws ConnectorException {
+    public List<H2ExampleUser> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
         List<H2ExampleUser> users = new ArrayList<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
@@ -113,7 +114,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public H2ExampleUser getOne(H2ExampleDriver h2Driver, String userId) throws ConnectorException {
+    public H2ExampleUser getOne(H2ExampleDriver h2Driver, String userId, Map<String,Object> headerMap) throws ConnectorException {
         H2ExampleUser user;
         try {
             String sql = "SELECT * FROM DEMO_USERS WHERE id = ?";
