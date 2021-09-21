@@ -50,6 +50,11 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     }
 
     @Override
+    public List<H2ExampleUser> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
+        return getAll(exampleRestDriver, map);
+    }
+
+    @Override
     public H2ExampleUser getOne(ExampleRestDriver driver, String userId, Map<String,Object> headerMap) throws ConnectorException {
         return driver.executeGetRequest("/users/" + userId, H2ExampleUser.class).getResponseObject();
     }

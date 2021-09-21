@@ -62,7 +62,6 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
         connector.init(configuration);
     }
 
-
     @Test
     public void test110UserCreate() {
         final String responseData = "{\"id\":\"keGi76UxSBePr_kFhIaM2Q\",\"firstName\":\"Captain\",\"lastName\":\"America\",\"email\":\"captain@america.com\"}";
@@ -80,7 +79,7 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
 
     @Test
     public void test120UserModify() {
-        prepareMockResponseEmpty();
+        prepareMockResponse();
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(H2ExampleUserAttribute.DESCRIPTION.name()).addValue("super hero").build());
 
@@ -133,7 +132,7 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
 
     @Test
     public void test220GroupModify() {
-        prepareMockResponseEmpty();
+        prepareMockResponse();
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(H2ExampleGroupAttribute.GROUP_NAME.name()).addValue("Alpha Flight2").build());
 
@@ -172,13 +171,13 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
 
     @Test
     public void test290GroupDelete() {
-        prepareMockResponseEmpty();
+        prepareMockResponse();
         connector.delete(ObjectClass.GROUP, new Uid("1234"), new OperationOptionsBuilder().build());
     }
 
     @Test
     public void test390UserDelete() {
-        prepareMockResponseEmpty();
+        prepareMockResponse();
         connector.delete(ObjectClass.ACCOUNT, new Uid("1234"), new OperationOptionsBuilder().build());
     }
 

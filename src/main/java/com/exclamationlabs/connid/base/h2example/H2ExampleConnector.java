@@ -20,15 +20,19 @@ import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleGroupsAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExamplePowersAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleUsersAdapter;
+import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute;
 import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.driver.H2ExampleDriver;
 import org.identityconnectors.framework.common.exceptions.ConnectorSecurityException;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "h2example.connector.display", configurationClass = H2ExampleConfiguration.class)
 public class H2ExampleConnector extends BaseFullAccessConnector {
+
 
     public H2ExampleConnector() {
 
@@ -45,6 +49,9 @@ public class H2ExampleConnector extends BaseFullAccessConnector {
         });
         setDriver(new H2ExampleDriver());
         setAdapters(new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter(), new H2ExamplePowersAdapter());
+        setEnhancedFiltering(true);
+        setFilterAttributes(new HashSet<>
+                (Collections.singleton(H2ExampleUserAttribute.DESCRIPTION.name())));
     }
 
 }
