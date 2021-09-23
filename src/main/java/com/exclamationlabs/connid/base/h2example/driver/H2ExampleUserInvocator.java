@@ -15,6 +15,7 @@ package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
+import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
@@ -114,6 +115,33 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
+    public List<H2ExampleUser> getAllFiltered(H2ExampleDriver h2Driver, Map<String, Object> map,
+                                              String attributeName, String attributeValue) throws ConnectorException {
+        if (StringUtils.equalsIgnoreCase("DESCRIPTION", attributeName)) {
+
+            List<H2ExampleUser> users = new ArrayList<>();
+            try {
+                Statement stmt = h2Driver.getConnection().createStatement();
+                String sql = "SELECT * FROM DEMO_USERS WHERE user_description = '" +
+                        attributeValue + "' ORDER BY email ASC";
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()) {
+                    H2ExampleUser user = loadUserFromResultSet(rs);
+                    users.add(user);
+                }
+                rs.close();
+                stmt.close();
+            } catch (SQLException sqlE) {
+                LOG.error("Error running statement", sqlE);
+                throw new ConnectorException(sqlE);
+            }
+            return users;
+        } else {
+            return getAll(h2Driver, map);
+        }
+    }
+
+    @Override
     public H2ExampleUser getOne(H2ExampleDriver h2Driver, String userId, Map<String,Object> headerMap) throws ConnectorException {
         H2ExampleUser user;
         try {
@@ -165,6 +193,21 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         person.setEmail("scott@xmen.com");
         person.setTimezone("Central");
         person.setDescription("X-Man");
+        create(h2Driver, person);
+
+        person.setFirstName("Ben");
+        person.setLastName("Grimm");
+        person.setEmail("ben@ff.com");
+        person.setTimezone("Central");
+        person.setDescription("Fantastic Four");
+        create(h2Driver, person);
+
+        person = new H2ExampleUser();
+        person.setFirstName("Johnny");
+        person.setLastName("Storm");
+        person.setEmail("johnny@ff.com");
+        person.setTimezone("Central");
+        person.setDescription("Fantastic Four");
         create(h2Driver, person);
     }
 

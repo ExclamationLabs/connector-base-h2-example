@@ -23,6 +23,9 @@ import java.util.Properties;
 @ConfigurationClass(skipUnsupported = true)
 public class H2ExampleConfiguration extends BaseConnectorConfiguration {
 
+    private String testMe1;
+    private String testMe2;
+
     public H2ExampleConfiguration() {
         super();
     }
@@ -38,6 +41,30 @@ public class H2ExampleConfiguration extends BaseConnectorConfiguration {
             required = true)
     public String getConfigurationFilePath() {
         return innerGetMidPointConfigurationFilePath();
+    }
+
+    @ConfigurationProperty(
+            displayMessageKey = "testme.display",
+            helpMessageKey = "help.display",
+            required = false)
+    public String getTestMe() {
+        return testMe1;
+    }
+
+    public void setTestMe(String in) {
+        testMe1 = in;
+    }
+
+    @ConfigurationProperty(
+            displayMessageKey = "where is it1",
+            helpMessageKey = "where is it2",
+            required = false)
+    public String getBasic() {
+        return "hello2";
+    }
+
+    public void setBasic(String in) {
+        testMe2 = in;
     }
 
     /**

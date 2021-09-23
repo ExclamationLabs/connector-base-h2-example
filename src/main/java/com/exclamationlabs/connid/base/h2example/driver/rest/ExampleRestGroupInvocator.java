@@ -50,6 +50,11 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     }
 
     @Override
+    public List<H2ExampleGroup> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
+        return getAll(exampleRestDriver, map);
+    }
+
+    @Override
     public H2ExampleGroup getOne(ExampleRestDriver driver, String groupId, Map<String,Object> headerMap) throws ConnectorException {
         return driver.executeGetRequest("/groups/" + groupId, H2ExampleGroup.class).getResponseObject();
     }
