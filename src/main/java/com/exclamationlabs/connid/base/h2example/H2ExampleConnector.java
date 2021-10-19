@@ -16,7 +16,6 @@ package com.exclamationlabs.connid.base.h2example;
 import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorConfiguration;
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleGroupsAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExamplePowersAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleUsersAdapter;
@@ -28,19 +27,13 @@ import org.identityconnectors.framework.spi.ConnectorClass;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 
 @ConnectorClass(displayNameKey = "h2example.connector.display", configurationClass = H2ExampleConfiguration.class)
 public class H2ExampleConnector extends BaseFullAccessConnector {
 
-
     public H2ExampleConnector() {
-
+        super(H2ExampleConfiguration.class);
         setAuthenticator(new Authenticator() {
-            @Override
-            public Set<ConnectorProperty> getRequiredPropertyNames() {
-                return null;
-            }
 
             @Override
             public String authenticate(ConnectorConfiguration connectorConfiguration) throws ConnectorSecurityException {
@@ -50,6 +43,7 @@ public class H2ExampleConnector extends BaseFullAccessConnector {
         setDriver(new H2ExampleDriver());
         setAdapters(new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter(), new H2ExamplePowersAdapter());
         setEnhancedFiltering(true);
+        H2ExampleConfiguration mod = (H2ExampleConfiguration) this.getConfiguration();
         setFilterAttributes(new HashSet<>
                 (Collections.singleton(H2ExampleUserAttribute.DESCRIPTION.name())));
     }

@@ -17,8 +17,10 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleUser> {
 
@@ -43,14 +45,14 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     }
 
     @Override
-    public List<H2ExampleUser> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleUser> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
         TestUsersResponse usersResponse = driver.executeGetRequest(
                 "/users", TestUsersResponse.class).getResponseObject();
         return usersResponse.getUsers();
     }
 
     @Override
-    public List<H2ExampleUser> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
+    public Set<H2ExampleUser> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
         return getAll(exampleRestDriver, map);
     }
 
@@ -60,14 +62,14 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     }
 
     static class TestUsersResponse {
-        List<H2ExampleUser> users;
+        Set<H2ExampleUser> users;
 
-        public List<H2ExampleUser> getUsers() {
+        public Set<H2ExampleUser> getUsers() {
             return users;
         }
 
         @SuppressWarnings("unused")
-        public void setPeople(List<H2ExampleUser> users) {
+        public void setPeople(Set<H2ExampleUser> users) {
             this.users = users;
         }
     }

@@ -22,10 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleGroup> {
 
@@ -85,8 +82,8 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public List<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
-        List<H2ExampleGroup> groups = new ArrayList<>();
+    public Set<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
+        Set<H2ExampleGroup> groups = new HashSet<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
             String sql = "SELECT * FROM DEMO_GROUPS ORDER BY NAME ASC";

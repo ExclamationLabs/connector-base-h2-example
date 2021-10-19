@@ -15,7 +15,7 @@ package com.exclamationlabs.connid.base.h2example.model;
 
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 
-import java.util.List;
+import java.util.Set;
 
 public class H2ExampleUser implements IdentityModel {
 
@@ -31,9 +31,9 @@ public class H2ExampleUser implements IdentityModel {
 
     private String description;
 
-    private List<String> groupIds;
+    private Set<String> groupIds;
 
-    private List<String> powerIds;
+    private Set<String> powerIds;
 
     @Override
     public String getIdentityIdValue() {
@@ -85,19 +85,19 @@ public class H2ExampleUser implements IdentityModel {
         this.timezone = timezone;
     }
 
-    public List<String> getGroupIds() {
+    public Set<String> getGroupIds() {
         return groupIds;
     }
 
-    public void setGroupIds(List<String> groupIds) {
+    public void setGroupIds(Set<String> groupIds) {
         this.groupIds = groupIds;
     }
 
-    public List<String> getPowerIds() {
+    public Set<String> getPowerIds() {
         return powerIds;
     }
 
-    public void setPowerIds(List<String> powerIds) {
+    public void setPowerIds(Set<String> powerIds) {
         this.powerIds = powerIds;
     }
 
@@ -109,4 +109,18 @@ public class H2ExampleUser implements IdentityModel {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object input) {
+        return identityEquals(H2ExampleUser.class, this, input);
+    }
+
+    @Override
+    public int hashCode() {
+        return identityHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return identityToString();
+    }
 }

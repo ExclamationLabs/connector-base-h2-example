@@ -58,7 +58,8 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
             }
         };
         H2ExampleConfiguration configuration = new H2ExampleConfiguration();
-        configuration.setTestConfiguration();
+        configuration.setServiceServiceUrl("http://www.somewhere.com");
+        configuration.setMine8(22);
         connector.init(configuration);
     }
 

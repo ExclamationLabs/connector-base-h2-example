@@ -54,7 +54,8 @@ public class H2ExampleConnectorIntegrationTest extends IntegrationTest {
             }
         };
         H2ExampleConfiguration configuration = new H2ExampleConfiguration();
-        configuration.setTestConfiguration();
+        configuration.setServiceServiceUrl("http://www.somewhere.com");
+        configuration.setMine8(22);
         connector.init(configuration);
     }
 

@@ -21,8 +21,7 @@ import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.STRING;
@@ -42,8 +41,8 @@ public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(POWER_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(POWER_NAME.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(POWER_DESCRIPTION.name(), STRING));
@@ -60,8 +59,8 @@ public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(H2ExamplePower power) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(H2ExamplePower power) {
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(POWER_ID.name(), power.getId()));
         attributes.add(AttributeBuilder.build(POWER_NAME.name(), power.getName()));

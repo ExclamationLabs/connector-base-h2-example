@@ -21,8 +21,7 @@ import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.ASSIGNMENT_IDENTIFIER;
@@ -44,8 +43,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(LAST_NAME.name(), STRING, NOT_UPDATEABLE));
@@ -75,8 +74,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(H2ExampleUser user) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(H2ExampleUser user) {
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
         attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmail()));

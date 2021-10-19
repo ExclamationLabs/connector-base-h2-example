@@ -17,8 +17,10 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleGroup> {
 
@@ -43,14 +45,14 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     }
 
     @Override
-    public List<H2ExampleGroup> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleGroup> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
         TestGroupsResponse response = driver.executeGetRequest(
                 "/groups", TestGroupsResponse.class).getResponseObject();
         return response.getGroups();
     }
 
     @Override
-    public List<H2ExampleGroup> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
+    public Set<H2ExampleGroup> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
         return getAll(exampleRestDriver, map);
     }
 
@@ -60,14 +62,14 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     }
 
     static class TestGroupsResponse {
-        List<H2ExampleGroup> groups;
+        Set<H2ExampleGroup> groups;
 
-        public List<H2ExampleGroup> getGroups() {
+        public Set<H2ExampleGroup> getGroups() {
             return groups;
         }
 
         @SuppressWarnings("unused")
-        public void setGroups(List<H2ExampleGroup> groups) {
+        public void setGroups(Set<H2ExampleGroup> groups) {
             this.groups = groups;
         }
     }
