@@ -45,6 +45,7 @@ public class H2ExampleConnectorIntegrationTest extends IntegrationTest {
 
     @BeforeClass
     public static void setup() {
+        String configName = new ConfigurationNameBuilder().withConnector(() -> "H2EXAMPLE").build();
         connector = new H2ExampleConnector() {
             @Override
             public void init(Configuration configuration) {
@@ -53,9 +54,7 @@ public class H2ExampleConnectorIntegrationTest extends IntegrationTest {
                 super.init(configuration);
             }
         };
-        H2ExampleConfiguration configuration = new H2ExampleConfiguration();
-        configuration.setServiceServiceUrl("http://www.somewhere.com");
-        configuration.setMine8(22);
+        H2ExampleConfiguration configuration = new H2ExampleConfiguration(configName);
         connector.init(configuration);
     }
 

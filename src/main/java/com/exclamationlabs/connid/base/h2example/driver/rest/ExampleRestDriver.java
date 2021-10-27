@@ -13,14 +13,12 @@
 
 package com.exclamationlabs.connid.base.h2example.driver.rest;
 
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.Set;
 
 /**
  * This is an example of what a simple RESTful driver might look like for the Base
@@ -46,11 +44,6 @@ public class ExampleRestDriver extends BaseRestDriver {
     @Override
     protected boolean usesBearerAuthorization() {
         return true;
-    }
-
-    @Override
-    public Set<ConnectorProperty> getRequiredPropertyNames() {
-        return null;
     }
 
     @Override

@@ -17,9 +17,6 @@ custom:
       mine21:
         type: long
         default: '123456789'
-      mine3:
-        type: float
-        default: '1.23'
       mine4:
         type: string
         default: 'hi'

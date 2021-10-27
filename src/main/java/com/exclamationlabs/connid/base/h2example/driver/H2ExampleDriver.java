@@ -15,7 +15,6 @@ package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorConfiguration;
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.BaseDriver;
 import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
@@ -48,11 +47,6 @@ public class H2ExampleDriver extends BaseDriver {
         addInvocator(H2ExampleUser.class, new H2ExampleUserInvocator());
         addInvocator(H2ExampleGroup.class, new H2ExampleGroupInvocator());
         addInvocator(H2ExamplePower.class, new H2ExamplePowerInvocator());
-    }
-
-    @Override
-    public Set<ConnectorProperty> getRequiredPropertyNames() {
-        return null;
     }
 
     @Override
