@@ -1,20 +1,12 @@
 buildscript {
     ext {}
     repositories {
-        jcenter()
-        flatDir {
-            dirs 'localTemp'
+        maven {
+            url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
         }
     }
     dependencies {
-
-        // TODO: 2.0 configuration - move these to base connector?
-        // Will artifactory/POM help take care of these
-        classpath 'org.yaml:snakeyaml:1.29'
-        classpath 'org.freemarker:freemarker:2.3.31'
-        classpath 'org.codehaus.groovy:groovy-all:3.0.8'
-
-        classpath(group: 'com.exclamationlabs.connid.base.config.plugin', name: 'connector-base-config-plugin', version: '2.0-SNAPSHOT')
+        classpath(group: 'com.exclamationlabs.connid', name: 'connector-base-config-plugin', version: "${config_plugin_version}-+")
     }
 }
 
@@ -23,17 +15,14 @@ plugins {
 }
 
 repositories {
-    jcenter()
-    flatDir {
-        dirs 'localTemp'
-    }
+    mavenCentral()
 
     maven {
         url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
     }
 
     maven {
-        url "http://nexus.evolveum.com/nexus/content/repositories/releases/"
+        url "https://nexus.evolveum.com/nexus/content/repositories/releases/"
     }
 }
 
@@ -44,24 +33,11 @@ targetCompatibility = '1.8'
 
 def versionNumber = "${project_version}"
 
-generateConfiguration {
-
-}
-
 dependencies {
 
     // Required for MidPoint runtime
     runtimeOnly 'org.codehaus.groovy:groovy:2.5.2'
     runtimeOnly 'com.evolveum.polygon:connector-common:1.5.0.0'
-
-    // TODO: temp - remove this later for 2.0 once base connector is published
-    implementation 'org.apache.commons:commons-lang3:3.8.1'
-    implementation 'net.tirasa.connid:connector-test-common:1.5.0.0'
-    implementation 'com.auth0:java-jwt:3.10.3'
-
-    //implementation 'javax.validation:validation-api:2.0.1.Final'
-    //implementation 'org.hibernate:hibernate-validator:5.2.4.Final'
-    implementation('org.springframework.boot:spring-boot-starter-validation:2.5.5')
 
     // HTTP/RESTful support
     implementation 'com.google.code.gson:gson:2.8.6'
@@ -72,9 +48,7 @@ dependencies {
 
     implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 
-    // TODO: switch back
-    //testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
-    testImplementation "com.exclamationlabs.connid:connector-base-test-support:1.2.0-+"
+    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
 
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'
 
@@ -87,6 +61,7 @@ sourceSets {
         }
     }
 }
+
 
 task copyDependencyJars(type: Copy) {
     from configurations.runtimeClasspath.collect {
@@ -104,6 +79,7 @@ task baseClean(type: Delete) {
 }
 
 jar {
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
     archiveName("${project.name}-${versionNumber}-connector.jar")
     from 'custom', 'build/classes/java/main', 'src/main/resources'
 

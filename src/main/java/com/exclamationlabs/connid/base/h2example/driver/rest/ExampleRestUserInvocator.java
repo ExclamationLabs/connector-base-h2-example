@@ -14,11 +14,11 @@
 package com.exclamationlabs.connid.base.h2example.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,15 +45,12 @@ public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriv
     }
 
     @Override
-    public Set<H2ExampleUser> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleUser> getAll(ExampleRestDriver driver,
+                                     ResultsFilter filter, ResultsPaginator paginator,
+                                     Integer resultCap) throws ConnectorException {
         TestUsersResponse usersResponse = driver.executeGetRequest(
                 "/users", TestUsersResponse.class).getResponseObject();
         return usersResponse.getUsers();
-    }
-
-    @Override
-    public Set<H2ExampleUser> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
-        return getAll(exampleRestDriver, map);
     }
 
     @Override

@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.h2example.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
@@ -28,7 +29,7 @@ import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttri
 import static com.exclamationlabs.connid.base.h2example.attribute.H2ExamplePowerAttribute.*;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower> {
+public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower, H2ExampleConfiguration> {
 
     @Override
     public ObjectClass getType() {
@@ -50,7 +51,8 @@ public class H2ExamplePowersAdapter extends BaseAdapter<H2ExamplePower> {
     }
 
     @Override
-    protected H2ExamplePower constructModel(Set<Attribute> attributes, boolean creation) {
+    protected H2ExamplePower constructModel(Set<Attribute> attributes, Set<Attribute> multiValuesAdd,
+                                            Set<Attribute> multiValuesRemove, boolean creation) {
         H2ExamplePower power = new H2ExamplePower();
         power.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
         power.setName(AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, POWER_NAME));

@@ -15,6 +15,7 @@ package com.exclamationlabs.connid.base.h2example.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -24,7 +25,7 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
  * This is an example of what a simple RESTful driver might look like for the Base
  * Connector framework.  This is just a fictional implementation, not real web services.
  */
-public class ExampleRestDriver extends BaseRestDriver {
+public class ExampleRestDriver extends BaseRestDriver<H2ExampleConfiguration> {
 
     public ExampleRestDriver() {
         addInvocator(H2ExampleUser.class, new ExampleRestUserInvocator());

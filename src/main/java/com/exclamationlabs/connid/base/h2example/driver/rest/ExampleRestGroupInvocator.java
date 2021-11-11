@@ -14,11 +14,11 @@
 package com.exclamationlabs.connid.base.h2example.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,15 +45,11 @@ public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDri
     }
 
     @Override
-    public Set<H2ExampleGroup> getAll(ExampleRestDriver driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleGroup> getAll(ExampleRestDriver driver, ResultsFilter filter, ResultsPaginator paginator,
+                                      Integer resultCap) throws ConnectorException {
         TestGroupsResponse response = driver.executeGetRequest(
                 "/groups", TestGroupsResponse.class).getResponseObject();
         return response.getGroups();
-    }
-
-    @Override
-    public Set<H2ExampleGroup> getAllFiltered(ExampleRestDriver exampleRestDriver, Map<String, Object> map, String s, String s1) throws ConnectorException {
-        return getAll(exampleRestDriver, map);
     }
 
     @Override

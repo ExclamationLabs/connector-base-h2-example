@@ -58,7 +58,7 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
             }
         };
         H2ExampleConfiguration configuration = new H2ExampleConfiguration();
-        configuration.setServiceServiceUrl("http://www.somewhere.com");
+        configuration.setServiceUrl("http://www.somewhere.com");
         configuration.setMine8(22);
         connector.init(configuration);
     }
@@ -81,12 +81,13 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
     @Test
     public void test120UserModify() {
         prepareMockResponse();
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(H2ExampleUserAttribute.DESCRIPTION.name()).addValue("super hero").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(H2ExampleUserAttribute.DESCRIPTION.name()).
+                addValueToReplace("super hero").build());
 
-        Uid newId = connector.update(ObjectClass.ACCOUNT, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(ObjectClass.ACCOUNT, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test
@@ -134,12 +135,13 @@ public class ExampleRestConnectorTest extends ConnectorMockRestTest {
     @Test
     public void test220GroupModify() {
         prepareMockResponse();
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(H2ExampleGroupAttribute.GROUP_NAME.name()).addValue("Alpha Flight2").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(H2ExampleGroupAttribute.GROUP_NAME.name()).
+                addValueToReplace("Alpha Flight2").build());
 
-        Uid newId = connector.update(ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test

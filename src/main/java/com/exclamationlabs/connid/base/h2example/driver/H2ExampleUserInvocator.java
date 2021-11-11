@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.common.logging.Log;
@@ -92,35 +94,15 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public Set<H2ExampleUser> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleUser> getAll(H2ExampleDriver h2Driver, ResultsFilter filter,
+                                     ResultsPaginator paginator, Integer resultCap) throws ConnectorException {
         Set<H2ExampleUser> users = new HashSet<>();
-        try {
-            Statement stmt = h2Driver.getConnection().createStatement();
-            String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                H2ExampleUser user = loadUserFromResultSet(rs);
-                users.add(user);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return users;
-    }
+        if (StringUtils.equalsIgnoreCase("DESCRIPTION", filter.getAttribute())) {
 
-    @Override
-    public Set<H2ExampleUser> getAllFiltered(H2ExampleDriver h2Driver, Map<String, Object> map,
-                                              String attributeName, String attributeValue) throws ConnectorException {
-        if (StringUtils.equalsIgnoreCase("DESCRIPTION", attributeName)) {
-
-            Set<H2ExampleUser> users = new HashSet<>();
             try {
                 Statement stmt = h2Driver.getConnection().createStatement();
                 String sql = "SELECT * FROM DEMO_USERS WHERE user_description = '" +
-                        attributeValue + "' ORDER BY email ASC";
+                        filter.getValue() + "' ORDER BY email ASC";
                 ResultSet rs = stmt.executeQuery(sql);
                 while(rs.next()) {
                     H2ExampleUser user = loadUserFromResultSet(rs);
@@ -134,8 +116,22 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             }
             return users;
         } else {
-            return getAll(h2Driver, map);
+            try {
+                Statement stmt = h2Driver.getConnection().createStatement();
+                String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    H2ExampleUser user = loadUserFromResultSet(rs);
+                    users.add(user);
+                }
+                rs.close();
+                stmt.close();
+            } catch (SQLException sqlE) {
+                LOG.error("Error running statement", sqlE);
+                throw new ConnectorException(sqlE);
+            }
         }
+        return users;
     }
 
     @Override

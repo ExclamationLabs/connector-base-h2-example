@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -82,7 +84,8 @@ public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public Set<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
+    public Set<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, ResultsFilter filter,
+                                      ResultsPaginator paginator, Integer resultCap) throws ConnectorException {
         Set<H2ExampleGroup> groups = new HashSet<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();

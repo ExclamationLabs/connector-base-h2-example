@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.h2example.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
@@ -30,7 +31,7 @@ import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserA
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.MULTIVALUED;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
+public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser, H2ExampleConfiguration> {
 
     @Override
     public ObjectClass getType() {
@@ -57,7 +58,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    protected H2ExampleUser constructModel(Set<Attribute> attributes, boolean creation) {
+    protected H2ExampleUser constructModel(Set<Attribute> attributes, Set<Attribute> multiValuesAdd,
+                                            Set<Attribute> multiValuesRemove, boolean creation) {
         H2ExampleUser user = new H2ExampleUser();
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
 

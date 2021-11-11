@@ -30,7 +30,7 @@ import java.util.*;
  * This is an example Base connector driver using a just-in-time H2 in-memory database
  * for Identity Access Management.
  */
-public class H2ExampleDriver extends BaseDriver {
+public class H2ExampleDriver extends BaseDriver<H2ExampleConfiguration> {
 
     private static final Log LOG = Log.getLog(H2ExampleDriver.class);
 
@@ -50,7 +50,7 @@ public class H2ExampleDriver extends BaseDriver {
     }
 
     @Override
-    public void initialize(ConnectorConfiguration baseConnectorConfiguration, Authenticator authenticator) throws ConnectorException {
+    public void initialize(H2ExampleConfiguration baseConnectorConfiguration, Authenticator authenticator) throws ConnectorException {
 
         try {
             Class.forName(JDBC_DRIVER);
