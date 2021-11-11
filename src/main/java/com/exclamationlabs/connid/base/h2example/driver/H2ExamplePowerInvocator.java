@@ -14,6 +14,9 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -22,10 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver, H2ExamplePower> {
 
@@ -85,8 +85,9 @@ public class H2ExamplePowerInvocator implements DriverInvocator<H2ExampleDriver,
     }
 
     @Override
-    public List<H2ExamplePower> getAll(H2ExampleDriver h2Driver, Map<String, Object> headerMap) throws ConnectorException {
-        List<H2ExamplePower> powers = new ArrayList<>();
+    public Set<H2ExamplePower> getAll(H2ExampleDriver h2Driver, ResultsFilter filter,
+                                      ResultsPaginator paginator, Integer resultCap) throws ConnectorException {
+        Set<H2ExamplePower> powers = new HashSet<>();
         try {
             Statement stmt = h2Driver.getConnection().createStatement();
             String sql = "SELECT * FROM DEMO_POWERS ORDER BY NAME ASC";

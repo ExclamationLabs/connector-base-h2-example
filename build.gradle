@@ -1,18 +1,32 @@
+buildscript {
+    ext {}
+    repositories {
+        maven {
+            url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
+        }
+    }
+    dependencies {
+        classpath(group: 'com.exclamationlabs.connid', name: 'connector-base-config-plugin', version: "${config_plugin_version}-+")
+    }
+}
+
 plugins {
     id 'java'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 
     maven {
         url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
     }
 
     maven {
-        url "http://nexus.evolveum.com/nexus/content/repositories/releases/"
+        url "https://nexus.evolveum.com/nexus/content/repositories/releases/"
     }
 }
+
+apply plugin: 'com.exclamationlabs.connid.base.config.plugin'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -35,8 +49,19 @@ dependencies {
     implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 
     testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
+
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'
+
 }
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'generatedConfig']
+        }
+    }
+}
+
 
 task copyDependencyJars(type: Copy) {
     from configurations.runtimeClasspath.collect {
@@ -50,9 +75,11 @@ task copyDependencyJars(type: Copy) {
 
 task baseClean(type: Delete) {
     delete 'custom'
+    delete 'generatedConfig'
 }
 
 jar {
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
     archiveName("${project.name}-${versionNumber}-connector.jar")
     from 'custom', 'build/classes/java/main', 'src/main/resources'
 
@@ -62,6 +89,8 @@ jar {
                 "ConnectorBundle-Name": project.name)
     }
 }
+
+compileJava.dependsOn('generateConfiguration')
 
 clean.dependsOn('baseClean')
 jar.dependsOn('copyDependencyJars')

@@ -16,13 +16,13 @@ package com.exclamationlabs.connid.base.h2example.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.ASSIGNMENT_IDENTIFIER;
@@ -31,7 +31,7 @@ import static com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserA
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.MULTIVALUED;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
+public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser, H2ExampleConfiguration> {
 
     @Override
     public ObjectClass getType() {
@@ -44,8 +44,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(FIRST_NAME.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(LAST_NAME.name(), STRING, NOT_UPDATEABLE));
@@ -58,7 +58,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    protected H2ExampleUser constructModel(Set<Attribute> attributes, boolean creation) {
+    protected H2ExampleUser constructModel(Set<Attribute> attributes, Set<Attribute> multiValuesAdd,
+                                            Set<Attribute> multiValuesRemove, boolean creation) {
         H2ExampleUser user = new H2ExampleUser();
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
 
@@ -75,8 +76,8 @@ public class H2ExampleUsersAdapter extends BaseAdapter<H2ExampleUser> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(H2ExampleUser user) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(H2ExampleUser user) {
+        Set<Attribute> attributes = new HashSet<>();
 
         attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
         attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmail()));

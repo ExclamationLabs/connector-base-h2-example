@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.common.logging.Log;
@@ -23,10 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleUser> {
 
@@ -95,35 +94,15 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     @Override
-    public List<H2ExampleUser> getAll(H2ExampleDriver h2Driver, Map<String,Object> headerMap) throws ConnectorException {
-        List<H2ExampleUser> users = new ArrayList<>();
-        try {
-            Statement stmt = h2Driver.getConnection().createStatement();
-            String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                H2ExampleUser user = loadUserFromResultSet(rs);
-                users.add(user);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return users;
-    }
+    public Set<H2ExampleUser> getAll(H2ExampleDriver h2Driver, ResultsFilter filter,
+                                     ResultsPaginator paginator, Integer resultCap) throws ConnectorException {
+        Set<H2ExampleUser> users = new HashSet<>();
+        if (StringUtils.equalsIgnoreCase("DESCRIPTION", filter.getAttribute())) {
 
-    @Override
-    public List<H2ExampleUser> getAllFiltered(H2ExampleDriver h2Driver, Map<String, Object> map,
-                                              String attributeName, String attributeValue) throws ConnectorException {
-        if (StringUtils.equalsIgnoreCase("DESCRIPTION", attributeName)) {
-
-            List<H2ExampleUser> users = new ArrayList<>();
             try {
                 Statement stmt = h2Driver.getConnection().createStatement();
                 String sql = "SELECT * FROM DEMO_USERS WHERE user_description = '" +
-                        attributeValue + "' ORDER BY email ASC";
+                        filter.getValue() + "' ORDER BY email ASC";
                 ResultSet rs = stmt.executeQuery(sql);
                 while(rs.next()) {
                     H2ExampleUser user = loadUserFromResultSet(rs);
@@ -137,8 +116,22 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
             }
             return users;
         } else {
-            return getAll(h2Driver, map);
+            try {
+                Statement stmt = h2Driver.getConnection().createStatement();
+                String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
+                ResultSet rs = stmt.executeQuery(sql);
+                while (rs.next()) {
+                    H2ExampleUser user = loadUserFromResultSet(rs);
+                    users.add(user);
+                }
+                rs.close();
+                stmt.close();
+            } catch (SQLException sqlE) {
+                LOG.error("Error running statement", sqlE);
+                throw new ConnectorException(sqlE);
+            }
         }
+        return users;
     }
 
     @Override
@@ -164,13 +157,13 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         }
 
         // Load groups for user
-        List<String> groupIds = loadGroups(h2Driver, userId);
+        Set<String> groupIds = loadGroups(h2Driver, userId);
         if (!groupIds.isEmpty()) {
             user.setGroupIds(groupIds);
         }
 
         // Load powers for user
-        List<String> powerIds = loadPowers(h2Driver, userId);
+        Set<String> powerIds = loadPowers(h2Driver, userId);
         if (!groupIds.isEmpty()) {
             user.setPowerIds(powerIds);
         }
@@ -223,8 +216,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
 
-    private List<String> loadGroups(H2ExampleDriver h2Driver, String userId) {
-        List<String> groupIds = new ArrayList<>();
+    private Set<String> loadGroups(H2ExampleDriver h2Driver, String userId) {
+        Set<String> groupIds = new HashSet<>();
         try {
             String sql = "SELECT group_id FROM DEMO_USERS_XREF WHERE user_id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -244,8 +237,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         return groupIds;
     }
 
-    private List<String> loadPowers(H2ExampleDriver h2Driver, String userId) {
-        List<String> powerIds = new ArrayList<>();
+    private Set<String> loadPowers(H2ExampleDriver h2Driver, String userId) {
+        Set<String> powerIds = new HashSet<>();
         try {
             String sql = "SELECT power_id FROM DEMO_USERS_POWERS_XREF WHERE user_id = ?";
             PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
@@ -266,8 +259,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
 
-    private void updateGroups(H2ExampleDriver h2Driver, List<String> newGroupIds, String userId, boolean isUpdate) {
-        List<String> currentGroups = new ArrayList<>();
+    private void updateGroups(H2ExampleDriver h2Driver, Set<String> newGroupIds, String userId, boolean isUpdate) {
+        Set<String> currentGroups = new HashSet<>();
         if (isUpdate) {
             currentGroups = loadGroups(h2Driver, userId);
 
@@ -287,8 +280,8 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
         }
     }
 
-    private void updatePowers(H2ExampleDriver h2Driver, List<String> newPowerIds, String userId, boolean isUpdate) {
-        List<String> currentPowers = new ArrayList<>();
+    private void updatePowers(H2ExampleDriver h2Driver, Set<String> newPowerIds, String userId, boolean isUpdate) {
+        Set<String> currentPowers = new HashSet<>();
         if (isUpdate) {
             currentPowers = loadPowers(h2Driver, userId);
 

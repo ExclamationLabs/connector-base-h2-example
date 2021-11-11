@@ -14,9 +14,9 @@
 package com.exclamationlabs.connid.base.h2example.driver;
 
 import com.exclamationlabs.connid.base.connector.authenticator.Authenticator;
-import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
+import com.exclamationlabs.connid.base.connector.configuration.ConnectorConfiguration;
 import com.exclamationlabs.connid.base.connector.driver.BaseDriver;
+import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
@@ -30,7 +30,7 @@ import java.util.*;
  * This is an example Base connector driver using a just-in-time H2 in-memory database
  * for Identity Access Management.
  */
-public class H2ExampleDriver extends BaseDriver {
+public class H2ExampleDriver extends BaseDriver<H2ExampleConfiguration> {
 
     private static final Log LOG = Log.getLog(H2ExampleDriver.class);
 
@@ -41,6 +41,8 @@ public class H2ExampleDriver extends BaseDriver {
 
     private Connection connection;
 
+    private ConnectorConfiguration configurationRef;
+
     public H2ExampleDriver() {
         addInvocator(H2ExampleUser.class, new H2ExampleUserInvocator());
         addInvocator(H2ExampleGroup.class, new H2ExampleGroupInvocator());
@@ -48,12 +50,7 @@ public class H2ExampleDriver extends BaseDriver {
     }
 
     @Override
-    public Set<ConnectorProperty> getRequiredPropertyNames() {
-        return null;
-    }
-
-    @Override
-    public void initialize(BaseConnectorConfiguration baseConnectorConfiguration, Authenticator authenticator) throws ConnectorException {
+    public void initialize(H2ExampleConfiguration baseConnectorConfiguration, Authenticator authenticator) throws ConnectorException {
 
         try {
             Class.forName(JDBC_DRIVER);
@@ -113,10 +110,17 @@ public class H2ExampleDriver extends BaseDriver {
             LOG.error("Error creating connection", e);
             throw new ConnectorException(e);
         }
+
+        configurationRef = baseConnectorConfiguration;
     }
 
     @Override
     public void test() throws ConnectorException {
+        H2ExampleConfiguration look = (H2ExampleConfiguration) configurationRef;
+        LOG.info("Mike test source: {0}", look.getSource());
+        LOG.info("Mike test token: {0}", look.getCurrentToken());
+        look.setSource("mikey " + System.currentTimeMillis());
+
         try {
             Statement stmt = connection.createStatement();
             String sql = "SELECT 1 AS test FROM dual";

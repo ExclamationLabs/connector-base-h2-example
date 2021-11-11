@@ -54,4 +54,19 @@ public class H2ExampleGroup implements IdentityModel {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public boolean equals(Object input) {
+        return identityEquals(H2ExampleGroup.class, this, input);
+    }
+
+    @Override
+    public int hashCode() {
+        return identityHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return identityToString();
+    }
 }
