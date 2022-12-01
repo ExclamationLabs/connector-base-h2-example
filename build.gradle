@@ -1,36 +1,27 @@
 buildscript {
     ext {}
-    repositories {
-        maven {
-            url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
-            credentials {
-                username = System.getenv('ARTIFACTORY_GRADLE_USER')
-                password = System.getenv('ARTIFACTORY_GRADLE_PASS')
-            }
-        }
-    }
     dependencies {
         classpath(group: 'com.exclamationlabs.connid', name: 'connector-base-config-plugin', version: "${config_plugin_version}-+")
+    }
+    repositories {
+        maven {
+            url "https://us-east1-maven.pkg.dev/provision-general-operations/provision-public"
+        }
     }
 }
 
 plugins {
     id 'java'
+    id 'com.google.cloud.artifactregistry.gradle-plugin' version '2.2.0'
 }
 
 repositories {
     mavenCentral()
-
-    maven {
-        url "https://artifactory.exclamationlabs.com/artifactory/libs-release-local"
-        credentials {
-            username = System.getenv('ARTIFACTORY_GRADLE_USER')
-            password = System.getenv('ARTIFACTORY_GRADLE_PASS')
-        }
-    }
-
     maven {
         url "https://nexus.evolveum.com/nexus/content/repositories/releases/"
+    }
+    maven {
+        url "https://us-east1-maven.pkg.dev/provision-general-operations/provision-public"
     }
 }
 
@@ -56,9 +47,13 @@ dependencies {
 
     implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+"
 
-    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${base_connector_version}-+"
+    testImplementation "com.exclamationlabs.connid:connector-base-test-support:${test_connector_version}-+"
 
     testImplementation 'net.tirasa.connid:connector-framework-internal:1.5.0.0'
+
+    // Example: pulling down source code and javadocs
+    //implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+:javadoc"
+    //implementation "com.exclamationlabs.connid:connector-base:${base_connector_version}-+:source"
 
 }
 

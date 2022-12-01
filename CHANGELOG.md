@@ -10,6 +10,7 @@ taken care of by a common API.
 
 # Change Log
 
++ **2.0.3** - Migrate to Google Archive Repository FIN-9902 (11/28/2022)
 + **2.0.2** - Updated build.gradle with Artifactory auth (03/28/2022) 
 + **2.0.1** - Updated to support and test Base Connector 2.0.1 (11/10/2021) 
 + **1.1.5** - Base Connector 1.x support and testing (08/12/2021)
