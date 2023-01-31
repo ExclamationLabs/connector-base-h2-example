@@ -17,128 +17,130 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
-import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class H2ExampleGroupInvocator implements DriverInvocator<H2ExampleDriver, H2ExampleGroup> {
 
-    private static final Log LOG = Log.getLog(H2ExampleGroupInvocator.class);
+  private static final Log LOG = Log.getLog(H2ExampleGroupInvocator.class);
 
-    @Override
-    public String create(H2ExampleDriver h2Driver, H2ExampleGroup h2ExampleGroup)
-            throws ConnectorException {
-        int newId = new Random().nextInt();
-        try {
-            String sql = "INSERT INTO DEMO_GROUPS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
-            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, newId);
-            stmt.setString(2, h2ExampleGroup.getName());
-            stmt.setString(3, h2ExampleGroup.getDescription());
-            stmt.executeUpdate();
-            stmt.close();
+  @Override
+  public String create(H2ExampleDriver h2Driver, H2ExampleGroup h2ExampleGroup)
+      throws ConnectorException {
+    int newId = new Random().nextInt();
+    try {
+      String sql = "INSERT INTO DEMO_GROUPS (ID, NAME, DESCRIPTION) VALUES (?,?,?)";
+      PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+      stmt.setInt(1, newId);
+      stmt.setString(2, h2ExampleGroup.getName());
+      stmt.setString(3, h2ExampleGroup.getDescription());
+      stmt.executeUpdate();
+      stmt.close();
 
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return "" + newId;
+    } catch (SQLException sqlE) {
+      LOG.error("Error running statement", sqlE);
+      throw new ConnectorException(sqlE);
     }
+    return "" + newId;
+  }
 
-    @Override
-    public void update(H2ExampleDriver h2Driver, String groupId, H2ExampleGroup h2ExampleGroup)
-            throws ConnectorException {
-        if (h2ExampleGroup.getDescription() == null) {
-            return;
-        }
-        try {
-            String sql = "UPDATE DEMO_GROUPS SET DESCRIPTION = ? WHERE ID = ?";
-            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setString(1, h2ExampleGroup.getDescription());
-            stmt.setInt(2, Integer.parseInt(groupId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
+  @Override
+  public void update(H2ExampleDriver h2Driver, String groupId, H2ExampleGroup h2ExampleGroup)
+      throws ConnectorException {
+    if (h2ExampleGroup.getDescription() == null) {
+      return;
     }
-
-    @Override
-    public void delete(H2ExampleDriver h2Driver, String groupId) throws ConnectorException {
-        try {
-            String sql = "DELETE FROM DEMO_GROUPS WHERE ID = ?";
-            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            stmt.executeUpdate();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
+    try {
+      String sql = "UPDATE DEMO_GROUPS SET DESCRIPTION = ? WHERE ID = ?";
+      PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+      stmt.setString(1, h2ExampleGroup.getDescription());
+      stmt.setInt(2, Integer.parseInt(groupId));
+      stmt.executeUpdate();
+      stmt.close();
+    } catch (SQLException sqlE) {
+      LOG.error("Error running statement", sqlE);
+      throw new ConnectorException(sqlE);
     }
+  }
 
-    @Override
-    public Set<H2ExampleGroup> getAll(H2ExampleDriver h2Driver, ResultsFilter filter,
-                                      ResultsPaginator paginator, Integer resultCap) throws ConnectorException {
-        Set<H2ExampleGroup> groups = new HashSet<>();
-        try {
-            Statement stmt = h2Driver.getConnection().createStatement();
-            String sql = "SELECT * FROM DEMO_GROUPS ORDER BY NAME ASC";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()) {
-                H2ExampleGroup group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
-                groups.add(group);
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return groups;
+  @Override
+  public void delete(H2ExampleDriver h2Driver, String groupId) throws ConnectorException {
+    try {
+      String sql = "DELETE FROM DEMO_GROUPS WHERE ID = ?";
+      PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+      stmt.setInt(1, Integer.parseInt(groupId));
+      stmt.executeUpdate();
+      stmt.close();
+    } catch (SQLException sqlE) {
+      LOG.error("Error running statement", sqlE);
+      throw new ConnectorException(sqlE);
     }
+  }
 
-    @Override
-    public H2ExampleGroup getOne(H2ExampleDriver h2Driver, String groupId, Map<String,Object> headerMap) throws ConnectorException {
-        H2ExampleGroup group = null;
-        try {
-            String sql = "SELECT * FROM DEMO_GROUPS WHERE ID = ?";
-            PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-            stmt.setInt(1, Integer.parseInt(groupId));
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()) {
-                group = new H2ExampleGroup();
-                group.setId(rs.getString("ID"));
-                group.setName(rs.getString("NAME"));
-                group.setDescription(rs.getString("DESCRIPTION"));
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException sqlE) {
-            LOG.error("Error running statement", sqlE);
-            throw new ConnectorException(sqlE);
-        }
-        return group;
+  @Override
+  public Set<H2ExampleGroup> getAll(
+      H2ExampleDriver h2Driver, ResultsFilter filter, ResultsPaginator paginator, Integer resultCap)
+      throws ConnectorException {
+    Set<H2ExampleGroup> groups = new HashSet<>();
+    try {
+      Statement stmt = h2Driver.getConnection().createStatement();
+      String sql = "SELECT * FROM DEMO_GROUPS ORDER BY NAME ASC";
+      ResultSet rs = stmt.executeQuery(sql);
+      while (rs.next()) {
+        H2ExampleGroup group = new H2ExampleGroup();
+        group.setId(rs.getString("ID"));
+        group.setName(rs.getString("NAME"));
+        group.setDescription(rs.getString("DESCRIPTION"));
+        groups.add(group);
+      }
+      rs.close();
+      stmt.close();
+    } catch (SQLException sqlE) {
+      LOG.error("Error running statement", sqlE);
+      throw new ConnectorException(sqlE);
     }
+    return groups;
+  }
 
-    void createInitialGroups(H2ExampleDriver driver) {
-        H2ExampleGroup group1 = new H2ExampleGroup();
-        group1.setName("New Mutants");
-        group1.setDescription("Mutant Team 1");
-        create(driver, group1);
-
-        H2ExampleGroup group2 = new H2ExampleGroup();
-        group2.setName("X-Factor");
-        group2.setDescription("Mutant Team 2");
-        create(driver, group2);
+  @Override
+  public H2ExampleGroup getOne(
+      H2ExampleDriver h2Driver, String groupId, Map<String, Object> headerMap)
+      throws ConnectorException {
+    H2ExampleGroup group = null;
+    try {
+      String sql = "SELECT * FROM DEMO_GROUPS WHERE ID = ?";
+      PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
+      stmt.setInt(1, Integer.parseInt(groupId));
+      ResultSet rs = stmt.executeQuery();
+      if (rs.next()) {
+        group = new H2ExampleGroup();
+        group.setId(rs.getString("ID"));
+        group.setName(rs.getString("NAME"));
+        group.setDescription(rs.getString("DESCRIPTION"));
+      }
+      rs.close();
+      stmt.close();
+    } catch (SQLException sqlE) {
+      LOG.error("Error running statement", sqlE);
+      throw new ConnectorException(sqlE);
     }
+    return group;
+  }
+
+  void createInitialGroups(H2ExampleDriver driver) {
+    H2ExampleGroup group1 = new H2ExampleGroup();
+    group1.setName("New Mutants");
+    group1.setDescription("Mutant Team 1");
+    create(driver, group1);
+
+    H2ExampleGroup group2 = new H2ExampleGroup();
+    group2.setName("X-Factor");
+    group2.setDescription("Mutant Team 2");
+    create(driver, group2);
+  }
 }

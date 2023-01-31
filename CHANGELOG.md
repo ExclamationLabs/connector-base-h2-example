@@ -10,6 +10,8 @@ taken care of by a common API.
 
 # Change Log
 
++ **3.0.1** - Migrate to GAR; Jenkins build FIN-9902 (01/31/2023)
++ **3.0** - Migrate to GAR; Junit 5; code formatting FIN-9902 (01/31/2023)
 + **2.0.3** - Migrate to Google Archive Repository FIN-9902 (11/28/2022)
 + **2.0.2** - Updated build.gradle with Artifactory auth (03/28/2022) 
 + **2.0.1** - Updated to support and test Base Connector 2.0.1 (11/10/2021) 

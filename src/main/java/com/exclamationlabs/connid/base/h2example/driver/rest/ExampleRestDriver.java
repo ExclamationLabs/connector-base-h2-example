@@ -20,46 +20,44 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-
 /**
- * This is an example of what a simple RESTful driver might look like for the Base
- * Connector framework.  This is just a fictional implementation, not real web services.
+ * This is an example of what a simple RESTful driver might look like for the Base Connector
+ * framework. This is just a fictional implementation, not real web services.
  */
 public class ExampleRestDriver extends BaseRestDriver<H2ExampleConfiguration> {
 
-    public ExampleRestDriver() {
-        addInvocator(H2ExampleUser.class, new ExampleRestUserInvocator());
-        addInvocator(H2ExampleGroup.class, new ExampleRestGroupInvocator());
-    }
+  public ExampleRestDriver() {
+    addInvocator(H2ExampleUser.class, new ExampleRestUserInvocator());
+    addInvocator(H2ExampleGroup.class, new ExampleRestGroupInvocator());
+  }
 
-    @Override
-    protected RestFaultProcessor getFaultProcessor() {
-        return ExampleFaultProcessor.getInstance();
-    }
+  @Override
+  protected RestFaultProcessor getFaultProcessor() {
+    return ExampleFaultProcessor.getInstance();
+  }
 
-    @Override
-    protected String getBaseServiceUrl() {
-        return "https://fictional-demo-url.com";
-    }
+  @Override
+  protected String getBaseServiceUrl() {
+    return "https://fictional-demo-url.com";
+  }
 
-    @Override
-    protected boolean usesBearerAuthorization() {
-        return true;
-    }
+  @Override
+  protected boolean usesBearerAuthorization() {
+    return true;
+  }
 
-    @Override
-    public void test() throws ConnectorException {
-        try {
-            executeGetRequest("/fictional/health/check", null);
-        } catch (Exception e) {
-            throw new ConnectorException("Health check for service failed.", e);
-        }
+  @Override
+  public void test() throws ConnectorException {
+    try {
+      executeGetRequest("/fictional/health/check", null);
+    } catch (Exception e) {
+      throw new ConnectorException("Health check for service failed.", e);
     }
+  }
 
-    @Override
-    public void close() {
-        configuration = null;
-        authenticator = null;
-    }
-
+  @Override
+  public void close() {
+    configuration = null;
+    authenticator = null;
+  }
 }

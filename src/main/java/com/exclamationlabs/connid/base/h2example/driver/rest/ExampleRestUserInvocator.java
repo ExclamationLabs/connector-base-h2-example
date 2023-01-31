@@ -17,58 +17,57 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-
 import java.util.Map;
 import java.util.Set;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 public class ExampleRestUserInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleUser> {
 
-    @Override
-    public String create(ExampleRestDriver driver, H2ExampleUser userModel)
-            throws ConnectorException {
-        H2ExampleUser response = driver.executePostRequest(
-                "/users", H2ExampleUser.class, userModel).getResponseObject();
-        return response.getId();
+  @Override
+  public String create(ExampleRestDriver driver, H2ExampleUser userModel)
+      throws ConnectorException {
+    H2ExampleUser response =
+        driver.executePostRequest("/users", H2ExampleUser.class, userModel).getResponseObject();
+    return response.getId();
+  }
+
+  @Override
+  public void update(ExampleRestDriver driver, String userId, H2ExampleUser userModel)
+      throws ConnectorException {
+    driver.executePatchRequest("/users/" + userId, null, userModel);
+  }
+
+  @Override
+  public void delete(ExampleRestDriver driver, String userId) throws ConnectorException {
+    driver.executeDeleteRequest("/users/" + userId, null);
+  }
+
+  @Override
+  public Set<H2ExampleUser> getAll(
+      ExampleRestDriver driver, ResultsFilter filter, ResultsPaginator paginator, Integer resultCap)
+      throws ConnectorException {
+    TestUsersResponse usersResponse =
+        driver.executeGetRequest("/users", TestUsersResponse.class).getResponseObject();
+    return usersResponse.getUsers();
+  }
+
+  @Override
+  public H2ExampleUser getOne(
+      ExampleRestDriver driver, String userId, Map<String, Object> headerMap)
+      throws ConnectorException {
+    return driver.executeGetRequest("/users/" + userId, H2ExampleUser.class).getResponseObject();
+  }
+
+  static class TestUsersResponse {
+    Set<H2ExampleUser> users;
+
+    public Set<H2ExampleUser> getUsers() {
+      return users;
     }
 
-    @Override
-    public void update(ExampleRestDriver driver, String userId, H2ExampleUser userModel)
-            throws ConnectorException {
-        driver.executePatchRequest(
-                "/users/" + userId, null, userModel);
+    @SuppressWarnings("unused")
+    public void setPeople(Set<H2ExampleUser> users) {
+      this.users = users;
     }
-
-    @Override
-    public void delete(ExampleRestDriver driver, String userId) throws ConnectorException {
-        driver.executeDeleteRequest("/users/" + userId, null);
-    }
-
-    @Override
-    public Set<H2ExampleUser> getAll(ExampleRestDriver driver,
-                                     ResultsFilter filter, ResultsPaginator paginator,
-                                     Integer resultCap) throws ConnectorException {
-        TestUsersResponse usersResponse = driver.executeGetRequest(
-                "/users", TestUsersResponse.class).getResponseObject();
-        return usersResponse.getUsers();
-    }
-
-    @Override
-    public H2ExampleUser getOne(ExampleRestDriver driver, String userId, Map<String,Object> headerMap) throws ConnectorException {
-        return driver.executeGetRequest("/users/" + userId, H2ExampleUser.class).getResponseObject();
-    }
-
-    static class TestUsersResponse {
-        Set<H2ExampleUser> users;
-
-        public Set<H2ExampleUser> getUsers() {
-            return users;
-        }
-
-        @SuppressWarnings("unused")
-        public void setPeople(Set<H2ExampleUser> users) {
-            this.users = users;
-        }
-    }
-
+  }
 }

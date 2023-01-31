@@ -14,113 +14,112 @@
 package com.exclamationlabs.connid.base.h2example.model;
 
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
-
 import java.util.Set;
 
 public class H2ExampleUser implements IdentityModel {
 
-    private String id;
+  private String id;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 
-    private String email;
+  private String email;
 
-    private String timezone;
+  private String timezone;
 
-    private String description;
+  private String description;
 
-    private Set<String> groupIds;
+  private Set<String> groupIds;
 
-    private Set<String> powerIds;
+  private Set<String> powerIds;
 
-    @Override
-    public String getIdentityIdValue() {
-        return getId();
-    }
+  @Override
+  public String getIdentityIdValue() {
+    return getId();
+  }
 
-    @Override
-    public String getIdentityNameValue() {
-        return getEmail();
-    }
+  @Override
+  public String getIdentityNameValue() {
+    return getEmail();
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public String getTimezone() {
-        return timezone;
-    }
+  public String getTimezone() {
+    return timezone;
+  }
 
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
+  public void setTimezone(String timezone) {
+    this.timezone = timezone;
+  }
 
-    public Set<String> getGroupIds() {
-        return groupIds;
-    }
+  public Set<String> getGroupIds() {
+    return groupIds;
+  }
 
-    public void setGroupIds(Set<String> groupIds) {
-        this.groupIds = groupIds;
-    }
+  public void setGroupIds(Set<String> groupIds) {
+    this.groupIds = groupIds;
+  }
 
-    public Set<String> getPowerIds() {
-        return powerIds;
-    }
+  public Set<String> getPowerIds() {
+    return powerIds;
+  }
 
-    public void setPowerIds(Set<String> powerIds) {
-        this.powerIds = powerIds;
-    }
+  public void setPowerIds(Set<String> powerIds) {
+    this.powerIds = powerIds;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    @Override
-    public boolean equals(Object input) {
-        return identityEquals(H2ExampleUser.class, this, input);
-    }
+  @Override
+  public boolean equals(Object input) {
+    return identityEquals(H2ExampleUser.class, this, input);
+  }
 
-    @Override
-    public int hashCode() {
-        return identityHashCode();
-    }
+  @Override
+  public int hashCode() {
+    return identityHashCode();
+  }
 
-    @Override
-    public String toString() {
-        return identityToString();
-    }
+  @Override
+  public String toString() {
+    return identityToString();
+  }
 }

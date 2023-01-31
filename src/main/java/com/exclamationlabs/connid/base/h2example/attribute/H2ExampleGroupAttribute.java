@@ -14,7 +14,7 @@
 package com.exclamationlabs.connid.base.h2example.attribute;
 
 public enum H2ExampleGroupAttribute {
-    GROUP_ID,
-    GROUP_NAME,
-    GROUP_DESCRIPTION
+  GROUP_ID,
+  GROUP_NAME,
+  GROUP_DESCRIPTION
 }

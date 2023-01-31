@@ -17,18 +17,17 @@
 package com.exclamationlabs.connid.base.h2example.model.response;
 
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
-
 import java.util.List;
 
 public class ListGroupsResponse {
 
-    private List<H2ExampleGroup> groups;
+  private List<H2ExampleGroup> groups;
 
-    public List<H2ExampleGroup> getGroups() {
-        return groups;
-    }
+  public List<H2ExampleGroup> getGroups() {
+    return groups;
+  }
 
-    public void setGroups(List<H2ExampleGroup> groups) {
-        this.groups = groups;
-    }
+  public void setGroups(List<H2ExampleGroup> groups) {
+    this.groups = groups;
+  }
 }
