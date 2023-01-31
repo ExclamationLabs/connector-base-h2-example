@@ -17,18 +17,17 @@
 package com.exclamationlabs.connid.base.h2example.model.response;
 
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
-
 import java.util.List;
 
 public class ListUsersResponse {
 
-    private List<H2ExampleUser> users;
+  private List<H2ExampleUser> users;
 
-    public List<H2ExampleUser> getUsers() {
-        return users;
-    }
+  public List<H2ExampleUser> getUsers() {
+    return users;
+  }
 
-    public void setUsers(List<H2ExampleUser> users) {
-        this.users = users;
-    }
+  public void setUsers(List<H2ExampleUser> users) {
+    this.users = users;
+  }
 }

@@ -14,12 +14,12 @@
 package com.exclamationlabs.connid.base.h2example.attribute;
 
 public enum H2ExampleUserAttribute {
-    USER_ID,
-    FIRST_NAME,
-    LAST_NAME,
-    EMAIL,
-    TIME_ZONE,
-    DESCRIPTION,
-    GROUP_IDS,
-    POWER_IDS
+  USER_ID,
+  FIRST_NAME,
+  LAST_NAME,
+  EMAIL,
+  TIME_ZONE,
+  DESCRIPTION,
+  GROUP_IDS,
+  POWER_IDS
 }

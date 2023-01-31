@@ -17,57 +17,57 @@ import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-
 import java.util.Map;
 import java.util.Set;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-public class ExampleRestGroupInvocator implements DriverInvocator<ExampleRestDriver, H2ExampleGroup> {
+public class ExampleRestGroupInvocator
+    implements DriverInvocator<ExampleRestDriver, H2ExampleGroup> {
 
-    @Override
-    public String create(ExampleRestDriver driver, H2ExampleGroup model)
-            throws ConnectorException {
-        H2ExampleGroup response = driver.executePostRequest(
-                "/groups", H2ExampleGroup.class, model).getResponseObject();
-        return response.getId();
+  @Override
+  public String create(ExampleRestDriver driver, H2ExampleGroup model) throws ConnectorException {
+    H2ExampleGroup response =
+        driver.executePostRequest("/groups", H2ExampleGroup.class, model).getResponseObject();
+    return response.getId();
+  }
+
+  @Override
+  public void update(ExampleRestDriver driver, String groupId, H2ExampleGroup model)
+      throws ConnectorException {
+    driver.executePatchRequest("/groups/" + groupId, null, model);
+  }
+
+  @Override
+  public void delete(ExampleRestDriver driver, String groupId) throws ConnectorException {
+    driver.executeDeleteRequest("/groups/" + groupId, null);
+  }
+
+  @Override
+  public Set<H2ExampleGroup> getAll(
+      ExampleRestDriver driver, ResultsFilter filter, ResultsPaginator paginator, Integer resultCap)
+      throws ConnectorException {
+    TestGroupsResponse response =
+        driver.executeGetRequest("/groups", TestGroupsResponse.class).getResponseObject();
+    return response.getGroups();
+  }
+
+  @Override
+  public H2ExampleGroup getOne(
+      ExampleRestDriver driver, String groupId, Map<String, Object> headerMap)
+      throws ConnectorException {
+    return driver.executeGetRequest("/groups/" + groupId, H2ExampleGroup.class).getResponseObject();
+  }
+
+  static class TestGroupsResponse {
+    Set<H2ExampleGroup> groups;
+
+    public Set<H2ExampleGroup> getGroups() {
+      return groups;
     }
 
-    @Override
-    public void update(ExampleRestDriver driver, String groupId, H2ExampleGroup model)
-            throws ConnectorException {
-        driver.executePatchRequest(
-                "/groups/" + groupId, null, model);
+    @SuppressWarnings("unused")
+    public void setGroups(Set<H2ExampleGroup> groups) {
+      this.groups = groups;
     }
-
-    @Override
-    public void delete(ExampleRestDriver driver, String groupId) throws ConnectorException {
-        driver.executeDeleteRequest("/groups/" + groupId, null);
-    }
-
-    @Override
-    public Set<H2ExampleGroup> getAll(ExampleRestDriver driver, ResultsFilter filter, ResultsPaginator paginator,
-                                      Integer resultCap) throws ConnectorException {
-        TestGroupsResponse response = driver.executeGetRequest(
-                "/groups", TestGroupsResponse.class).getResponseObject();
-        return response.getGroups();
-    }
-
-    @Override
-    public H2ExampleGroup getOne(ExampleRestDriver driver, String groupId, Map<String,Object> headerMap) throws ConnectorException {
-        return driver.executeGetRequest("/groups/" + groupId, H2ExampleGroup.class).getResponseObject();
-    }
-
-    static class TestGroupsResponse {
-        Set<H2ExampleGroup> groups;
-
-        public Set<H2ExampleGroup> getGroups() {
-            return groups;
-        }
-
-        @SuppressWarnings("unused")
-        public void setGroups(Set<H2ExampleGroup> groups) {
-            this.groups = groups;
-        }
-    }
-
+  }
 }
