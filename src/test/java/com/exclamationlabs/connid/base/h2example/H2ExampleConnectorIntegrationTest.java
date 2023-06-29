@@ -26,6 +26,8 @@ import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfigur
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.AndFilter;
+import org.identityconnectors.framework.common.objects.filter.ContainsFilter;
 import org.identityconnectors.framework.common.objects.filter.EqualsFilter;
 import org.junit.jupiter.api.*;
 
@@ -64,6 +66,12 @@ public class H2ExampleConnectorIntegrationTest
   }
 
   @Test
+  @Order(8)
+  public void testSchema() {
+    getConnectorFacade().schema();
+  }
+
+  @Test
   @Order(10)
   public void test010GroupCreate() {
     Set<Attribute> attributes = new HashSet<>();
@@ -80,7 +88,7 @@ public class H2ExampleConnectorIntegrationTest
 
     Uid newId =
         getConnectorFacade()
-            .create(ObjectClass.GROUP, attributes, new OperationOptionsBuilder().build());
+            .create(new ObjectClass("group"), attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
     generatedGroupId = newId.getUidValue();
@@ -99,7 +107,7 @@ public class H2ExampleConnectorIntegrationTest
     Set<AttributeDelta> result =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.GROUP,
+                new ObjectClass("group"),
                 new Uid(generatedGroupId),
                 attributes,
                 new OperationOptionsBuilder().build());
@@ -112,7 +120,7 @@ public class H2ExampleConnectorIntegrationTest
   public void test030GroupsGet() {
     results = new ArrayList<>();
     getConnectorFacade()
-        .search(ObjectClass.GROUP, null, handler, new OperationOptionsBuilder().build());
+        .search(new ObjectClass("group"), null, handler, new OperationOptionsBuilder().build());
     assertTrue(results.size() >= 1);
     assertTrue(
         StringUtils.isNotBlank(
@@ -132,7 +140,7 @@ public class H2ExampleConnectorIntegrationTest
 
     getConnectorFacade()
         .search(
-            ObjectClass.GROUP,
+            new ObjectClass("group"),
             new EqualsFilter(idAttribute),
             handler,
             new OperationOptionsBuilder().build());
@@ -170,14 +178,11 @@ public class H2ExampleConnectorIntegrationTest
             .addValue("Central")
             .build());
     attributes.add(
-        new AttributeBuilder()
-            .setName(H2ExampleUserAttribute.EMAIL.name())
-            .addValue("hawkeye@avengers.com")
-            .build());
+        new AttributeBuilder().setName(Name.NAME).addValue("hawkeye@avengers.com").build());
 
     Uid newId =
         getConnectorFacade()
-            .create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
+            .create(new ObjectClass("user"), attributes, new OperationOptionsBuilder().build());
     assertNotNull(newId);
     assertNotNull(newId.getUidValue());
     generatedUserId = newId.getUidValue();
@@ -196,7 +201,7 @@ public class H2ExampleConnectorIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
+                new ObjectClass("user"),
                 new Uid(generatedUserId),
                 attributes,
                 new OperationOptionsBuilder().build());
@@ -209,14 +214,89 @@ public class H2ExampleConnectorIntegrationTest
   public void test130UsersGet() {
     results = new ArrayList<>();
     getConnectorFacade()
-        .search(ObjectClass.ACCOUNT, null, handler, new OperationOptionsBuilder().build());
+        .search(new ObjectClass("user"), null, handler, new OperationOptionsBuilder().build());
     assertTrue(results.size() >= 1);
     assertTrue(
         StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+            results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString()));
     assertTrue(
         StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(EMAIL.name()).getValue().get(0).toString()));
+            results.get(0).getAttributeByName(Name.NAME).getValue().get(0).toString()));
+  }
+
+  @Test
+  @Order(132)
+  public void test132UsersGetEqualsFilter() {
+    results = new ArrayList<>();
+    Attribute attribute =
+        new AttributeBuilder().setName(DESCRIPTION.name()).addValue("Fantastic Four").build();
+    getConnectorFacade()
+        .search(
+            new ObjectClass("user"),
+            new EqualsFilter(attribute),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(4, results.size());
+    assertNotNull(results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString());
+    assertEquals(
+        "ben@ff.com", results.get(0).getAttributeByName(Name.NAME).getValue().get(0).toString());
+  }
+
+  @Test
+  @Order(133)
+  public void test133UsersGetEqualsFilterPage2() {
+    results = new ArrayList<>();
+    Attribute attribute =
+        new AttributeBuilder().setName(DESCRIPTION.name()).addValue("Fantastic Four").build();
+    getConnectorFacade()
+        .search(
+            new ObjectClass("user"),
+            new EqualsFilter(attribute),
+            handler,
+            new OperationOptionsBuilder().setPagedResultsOffset(3).setPageSize(2).build());
+    assertEquals(2, results.size());
+    assertNotNull(results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString());
+    assertEquals(
+        "sue@ff.com", results.get(0).getAttributeByName(Name.NAME).getValue().get(0).toString());
+  }
+
+  @Test
+  @Order(134)
+  public void test134UsersContainsFilter() {
+    results = new ArrayList<>();
+    Attribute attribute =
+        new AttributeBuilder().setName(FIRST_NAME.name()).addValue("scot").build();
+    getConnectorFacade()
+        .search(
+            new ObjectClass("user"),
+            new ContainsFilter(attribute),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(2, results.size());
+    assertNotNull(results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString());
+    assertEquals(
+        "scott@xmen.com",
+        results.get(0).getAttributeByName(Name.NAME).getValue().get(0).toString());
+  }
+
+  @Test
+  @Order(135)
+  public void test135UsersAndFilter() {
+    results = new ArrayList<>();
+    Attribute attribute =
+        new AttributeBuilder().setName(DESCRIPTION.name()).addValue("X-Man").build();
+    Attribute attribute2 = new AttributeBuilder().setName(GENDER.name()).addValue("F").build();
+    getConnectorFacade()
+        .search(
+            new ObjectClass("user"),
+            new AndFilter(new ContainsFilter(attribute), new ContainsFilter(attribute2)),
+            handler,
+            new OperationOptionsBuilder().build());
+    assertEquals(4, results.size());
+    assertNotNull(results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString());
+    assertEquals(
+        "kitty@xmen.com",
+        results.get(0).getAttributeByName(Name.NAME).getValue().get(0).toString());
   }
 
   @Test
@@ -229,14 +309,14 @@ public class H2ExampleConnectorIntegrationTest
 
     getConnectorFacade()
         .search(
-            ObjectClass.ACCOUNT,
+            new ObjectClass("user"),
             new EqualsFilter(idAttribute),
             handler,
             new OperationOptionsBuilder().build());
     assertEquals(1, results.size());
     assertTrue(
         StringUtils.isNotBlank(
-            results.get(0).getAttributeByName(USER_ID.name()).getValue().get(0).toString()));
+            results.get(0).getAttributeByName(Uid.NAME).getValue().get(0).toString()));
   }
 
   @Test
@@ -252,7 +332,7 @@ public class H2ExampleConnectorIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
+                new ObjectClass("user"),
                 new Uid(generatedUserId),
                 attributes,
                 new OperationOptionsBuilder().build());
@@ -273,7 +353,7 @@ public class H2ExampleConnectorIntegrationTest
     Set<AttributeDelta> response =
         getConnectorFacade()
             .updateDelta(
-                ObjectClass.ACCOUNT,
+                new ObjectClass("user"),
                 new Uid(generatedUserId),
                 attributes,
                 new OperationOptionsBuilder().build());
@@ -286,7 +366,9 @@ public class H2ExampleConnectorIntegrationTest
   public void test290GroupDelete() {
     getConnectorFacade()
         .delete(
-            ObjectClass.GROUP, new Uid(generatedGroupId), new OperationOptionsBuilder().build());
+            new ObjectClass("group"),
+            new Uid(generatedGroupId),
+            new OperationOptionsBuilder().build());
   }
 
   @Test
@@ -294,6 +376,8 @@ public class H2ExampleConnectorIntegrationTest
   public void test390UserDelete() {
     getConnectorFacade()
         .delete(
-            ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
+            new ObjectClass("user"),
+            new Uid(generatedUserId),
+            new OperationOptionsBuilder().build());
   }
 }

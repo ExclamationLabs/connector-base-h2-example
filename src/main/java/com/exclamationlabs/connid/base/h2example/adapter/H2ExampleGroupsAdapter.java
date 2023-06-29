@@ -32,7 +32,7 @@ public class H2ExampleGroupsAdapter extends BaseAdapter<H2ExampleGroup, H2Exampl
 
   @Override
   public ObjectClass getType() {
-    return ObjectClass.GROUP;
+    return new ObjectClass("group");
   }
 
   @Override

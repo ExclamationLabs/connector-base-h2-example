@@ -4,6 +4,7 @@ configurationClass:
   name: 'H2ExampleConfiguration'
   package: 'com.exclamationlabs.connid.base.h2example.configuration'
 rest: true # io-error-retries
+results: true
 service: true # service-url
 custom:
   items:

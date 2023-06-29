@@ -17,11 +17,8 @@ import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleGroupsAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExamplePowersAdapter;
 import com.exclamationlabs.connid.base.h2example.adapter.H2ExampleUsersAdapter;
-import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute;
 import com.exclamationlabs.connid.base.h2example.configuration.H2ExampleConfiguration;
 import com.exclamationlabs.connid.base.h2example.driver.H2ExampleDriver;
-import java.util.Collections;
-import java.util.HashSet;
 import org.identityconnectors.framework.spi.ConnectorClass;
 
 @ConnectorClass(
@@ -35,8 +32,5 @@ public class H2ExampleConnector extends BaseFullAccessConnector<H2ExampleConfigu
     setDriver(new H2ExampleDriver());
     setAdapters(
         new H2ExampleUsersAdapter(), new H2ExampleGroupsAdapter(), new H2ExamplePowersAdapter());
-    setEnhancedFiltering(true);
-    setFilterAttributes(
-        new HashSet<>(Collections.singleton(H2ExampleUserAttribute.DESCRIPTION.name())));
   }
 }

@@ -21,7 +21,6 @@ import com.exclamationlabs.connid.base.h2example.model.H2ExampleGroup;
 import com.exclamationlabs.connid.base.h2example.model.H2ExamplePower;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
 import java.sql.*;
-import java.util.*;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
@@ -77,7 +76,7 @@ public class H2ExampleDriver extends BaseDriver<H2ExampleConfiguration> {
           "CREATE TABLE DEMO_USERS (id INTEGER NOT NULL, "
               + "first_name VARCHAR(255), last_name VARCHAR(255), "
               + "timezone VARCHAR(255), user_description VARCHAR(255), "
-              + "email VARCHAR(255), PRIMARY KEY (id))";
+              + "email VARCHAR(255), gender VARCHAR(255), PRIMARY KEY (id))";
       stmt.executeUpdate(sql);
 
       sql =

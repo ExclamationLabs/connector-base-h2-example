@@ -14,7 +14,12 @@
 package com.exclamationlabs.connid.base.h2example.model;
 
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
+import com.exclamationlabs.connid.base.h2example.attribute.H2ExampleUserAttribute;
 import java.util.Set;
+import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
+import org.identityconnectors.framework.common.objects.Name;
+import org.identityconnectors.framework.common.objects.Uid;
 
 public class H2ExampleUser implements IdentityModel {
 
@@ -30,9 +35,15 @@ public class H2ExampleUser implements IdentityModel {
 
   private String description;
 
+  private String gender;
+
   private Set<String> groupIds;
 
   private Set<String> powerIds;
+
+  public H2ExampleUser() {
+    setId(UUID.randomUUID().toString());
+  }
 
   @Override
   public String getIdentityIdValue() {
@@ -106,6 +117,51 @@ public class H2ExampleUser implements IdentityModel {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getGender() {
+    return gender;
+  }
+
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+
+  @Override
+  public String getValueBySearchableAttributeName(String attributeName) {
+    String value = null;
+    if (StringUtils.equalsIgnoreCase(attributeName, Uid.NAME)) {
+      return getIdentityIdValue();
+    }
+    if (StringUtils.equalsIgnoreCase(attributeName, Name.NAME)) {
+      return getIdentityNameValue();
+    }
+    switch (H2ExampleUserAttribute.valueOf(attributeName)) {
+      case USER_ID:
+        value = getIdentityIdValue();
+        break;
+      case EMAIL:
+        value = getIdentityNameValue();
+        break;
+      case FIRST_NAME:
+        value = getFirstName();
+        break;
+      case LAST_NAME:
+        value = getLastName();
+        break;
+      case DESCRIPTION:
+        value = getDescription();
+        break;
+      case TIME_ZONE:
+        value = getTimezone();
+        break;
+      case GENDER:
+        value = getGender();
+        break;
+      default:
+        break;
+    }
+    return value;
   }
 
   @Override

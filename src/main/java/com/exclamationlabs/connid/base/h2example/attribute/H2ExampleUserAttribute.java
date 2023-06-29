@@ -20,6 +20,7 @@ public enum H2ExampleUserAttribute {
   EMAIL,
   TIME_ZONE,
   DESCRIPTION,
+  GENDER,
   GROUP_IDS,
   POWER_IDS
 }

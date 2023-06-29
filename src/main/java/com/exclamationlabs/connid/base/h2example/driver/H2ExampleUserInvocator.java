@@ -13,7 +13,9 @@
 
 package com.exclamationlabs.connid.base.h2example.driver;
 
+import com.exclamationlabs.connid.base.connector.adapter.SearchExecutor;
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.filter.FilterType;
 import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
 import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.h2example.model.H2ExampleUser;
@@ -22,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
@@ -30,22 +31,25 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
 
   private static final Log LOG = Log.getLog(H2ExampleUserInvocator.class);
 
+  private static Integer userCounter = 1000;
+
   @Override
   public String create(H2ExampleDriver h2Driver, H2ExampleUser h2ExampleUser)
       throws ConnectorException {
-    int newId = new Random().nextInt();
     try {
       String sql =
           "INSERT INTO DEMO_USERS (id, first_name, last_name, email, "
-              + "user_description, timezone) VALUES (?,?,?,?,?,?)";
+              + "user_description, timezone, gender) VALUES (?,?,?,?,?,?,?)";
       PreparedStatement stmt = h2Driver.getConnection().prepareStatement(sql);
-      stmt.setInt(1, newId);
+      stmt.setInt(1, userCounter);
       stmt.setString(2, h2ExampleUser.getFirstName());
       stmt.setString(3, h2ExampleUser.getLastName());
       stmt.setString(4, h2ExampleUser.getEmail());
       stmt.setString(5, h2ExampleUser.getDescription());
       stmt.setString(6, h2ExampleUser.getTimezone());
+      stmt.setString(7, h2ExampleUser.getGender());
       stmt.executeUpdate();
+      userCounter++;
       stmt.close();
 
     } catch (SQLException sqlE) {
@@ -53,7 +57,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
       throw new ConnectorException(sqlE);
     }
 
-    String newIdString = "" + newId;
+    String newIdString = "" + (userCounter - 1);
     updateGroups(h2Driver, h2ExampleUser.getGroupIds(), newIdString, false);
     updatePowers(h2Driver, h2ExampleUser.getPowerIds(), newIdString, false);
 
@@ -97,15 +101,23 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
   public Set<H2ExampleUser> getAll(
       H2ExampleDriver h2Driver, ResultsFilter filter, ResultsPaginator paginator, Integer resultCap)
       throws ConnectorException {
-    Set<H2ExampleUser> users = new HashSet<>();
-    if (StringUtils.equalsIgnoreCase("DESCRIPTION", filter.getAttribute())) {
+    Set<H2ExampleUser> users = new LinkedHashSet<>();
+    String paginationClause =
+        paginator.hasPagination()
+            ? " LIMIT "
+                + paginator.getPageSize()
+                + " OFFSET "
+                + SearchExecutor.correctConnIdOffset(paginator.getCurrentOffset())
+            : "";
+    if (filter.hasFilter()) {
 
       try {
         Statement stmt = h2Driver.getConnection().createStatement();
         String sql =
-            "SELECT * FROM DEMO_USERS WHERE user_description = '"
-                + filter.getValue()
-                + "' ORDER BY email ASC";
+            "SELECT * FROM DEMO_USERS WHERE  "
+                + getFilterClause(filter)
+                + " ORDER BY id ASC"
+                + paginationClause;
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
           H2ExampleUser user = loadUserFromResultSet(rs);
@@ -121,7 +133,7 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     } else {
       try {
         Statement stmt = h2Driver.getConnection().createStatement();
-        String sql = "SELECT * FROM DEMO_USERS ORDER BY email ASC";
+        String sql = "SELECT * FROM DEMO_USERS ORDER BY id ASC" + paginationClause;
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
           H2ExampleUser user = loadUserFromResultSet(rs);
@@ -135,6 +147,67 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
       }
     }
     return users;
+  }
+
+  private String getFilterClause(ResultsFilter filter) {
+    if (filter.getFilterType() == FilterType.AndFilter) {
+      if (filter.getAndFilterType() == FilterType.ContainsFilter) {
+        return String.format(
+            "LOWER(%s) LIKE LOWER('%%%s%%') AND LOWER(%s) LIKE LOWER('%%%s%%')",
+            getColumnForAttribute(filter.getAndFilterDataMap().keySet().stream().findFirst().get()),
+            filter.getAndFilterDataMap().values().stream().findFirst().get(),
+            getColumnForAttribute(
+                filter.getAndFilterDataMap().keySet().stream().skip(1).findAny().get()),
+            filter.getAndFilterDataMap().values().stream().skip(1).findAny().get());
+      } else {
+        return String.format(
+            "LOWER(%s) = LOWER('%s') AND LOWER(%s) = LOWER('%s')",
+            getColumnForAttribute(filter.getAndFilterDataMap().keySet().stream().findFirst().get()),
+            filter.getAndFilterDataMap().values().stream().findFirst().get(),
+            getColumnForAttribute(
+                filter.getAndFilterDataMap().keySet().stream().skip(1).findAny().get()),
+            filter.getAndFilterDataMap().values().stream().skip(1).findAny().get());
+      }
+    } else if (filter.getFilterType() == FilterType.ContainsFilter) {
+      return String.format(
+          "LOWER(%s) LIKE LOWER('%%%s%%')",
+          getColumnForAttribute(filter.getAttribute()), filter.getValue());
+    } else {
+      return String.format(
+          "LOWER(%s) = LOWER('%s')",
+          getColumnForAttribute(filter.getAttribute()), filter.getValue());
+    }
+  }
+
+  private static String getColumnForAttribute(final String attributeName) {
+    String result = "";
+    switch (attributeName) {
+      case "EMAIL":
+      case "__NAME__":
+        result = "email";
+        break;
+      case "FIRST_NAME":
+        result = "first_name";
+        break;
+      case "LAST_NAME":
+        result = "last_name";
+        break;
+      case "TIME_ZONE":
+        result = "timezonme";
+        break;
+      case "DESCRIPTION":
+        result = "user_description";
+        break;
+      case "GENDER":
+        result = "gender";
+        break;
+      case "USER_ID":
+      case "__UID__":
+      default:
+        result = "id";
+        break;
+    }
+    return result;
   }
 
   @Override
@@ -174,39 +247,6 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
     }
 
     return user;
-  }
-
-  void createInitialUsers(H2ExampleDriver h2Driver) {
-    H2ExampleUser person = new H2ExampleUser();
-    person.setFirstName("Peter");
-    person.setLastName("Rasputin");
-    person.setEmail("peter@xmen.com");
-    person.setTimezone("Central");
-    person.setDescription("X-Man");
-    create(h2Driver, person);
-
-    person = new H2ExampleUser();
-    person.setFirstName("Scott");
-    person.setLastName("Summers");
-    person.setEmail("scott@xmen.com");
-    person.setTimezone("Central");
-    person.setDescription("X-Man");
-    create(h2Driver, person);
-
-    person.setFirstName("Ben");
-    person.setLastName("Grimm");
-    person.setEmail("ben@ff.com");
-    person.setTimezone("Central");
-    person.setDescription("Fantastic Four");
-    create(h2Driver, person);
-
-    person = new H2ExampleUser();
-    person.setFirstName("Johnny");
-    person.setLastName("Storm");
-    person.setEmail("johnny@ff.com");
-    person.setTimezone("Central");
-    person.setDescription("Fantastic Four");
-    create(h2Driver, person);
   }
 
   private H2ExampleUser loadUserFromResultSet(ResultSet rs) throws SQLException {
@@ -364,5 +404,10 @@ public class H2ExampleUserInvocator implements DriverInvocator<H2ExampleDriver, 
       LOG.error("Error running statement", sqlE);
       throw new ConnectorException(sqlE);
     }
+  }
+
+  public void createInitialUsers(H2ExampleDriver driver) {
+    Set<H2ExampleUser> userSet = InitialUsersGeneration.execute();
+    userSet.forEach(item -> create(driver, item));
   }
 }

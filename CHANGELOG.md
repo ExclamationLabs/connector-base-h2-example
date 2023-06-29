@@ -9,7 +9,7 @@ and minimize the interactions with the ConnId framework and have much of that
 taken care of by a common API.
 
 # Change Log
-
++ **4.0** - FIN-10678 Add/test filtering/pagination support (06/27/2023)
 + **3.0.1** - Migrate to GAR; Jenkins build FIN-9902 (01/31/2023)
 + **3.0** - Migrate to GAR; Junit 5; code formatting FIN-9902 (01/31/2023)
 + **2.0.3** - Migrate to Google Archive Repository FIN-9902 (11/28/2022)
